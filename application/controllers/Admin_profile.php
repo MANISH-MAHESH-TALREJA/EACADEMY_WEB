@@ -2,42 +2,50 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Admin_profile extends CI_Controller {
- 
-	function __construct(){
-		parent::__construct();	
-		 $timezoneDB = $this->db_model->select_data('timezone','site_details',array('id'=>1));
-		if(isset($timezoneDB[0]['timezone']) && !empty($timezoneDB[0]['timezone'])){
+
+    function __construct()
+    {
+        parent::__construct();
+        $timezoneDB = $this->db_model->select_data('timezone', 'site_details', array('id' => 1));
+        if (isset($timezoneDB[0]['timezone']) && !empty($timezoneDB[0]['timezone']))
+        {
             date_default_timezone_set($timezoneDB[0]['timezone']);
         }
-		if(!empty($_SESSION['role'])){
-	        if($_SESSION['role']=='student'){
-	            redirect(base_url('student/dashboard')); 
-	        }else if($_SESSION['role']==3){
-	            redirect(base_url('teacher/dashboard')); 
-	        }
-	    }else{
-	        redirect(base_url('login'));
-	    }
-		
-		// check select language
-		$this->load->helper('language');
-		$language = $this->general_settings('language_name');
+        if (!empty($_SESSION['role']))
+        {
+            if ($_SESSION['role'] == 'student')
+            {
+                redirect(base_url('student/dashboard'));
+            }
+            else if ($_SESSION['role'] == 3)
+            {
+                redirect(base_url('teacher/dashboard'));
+            }
+        }
+        else
+        {
+            redirect(base_url('login'));
+        }
+
+        // check select language
+        $this->load->helper('language');
+        $language = $this->general_settings('language_name');
 // 		print_r($language);
 // 		die;
-		if($language=="french"){
-			$this->lang->load('french_lang', 'french');
-		}else if($language=="arabic"){
-			$this->lang->load('arabic_lang', 'arabic');
-		}else if($language=="english"){
-			$this->lang->load('english_lang', 'english');
-		}else if($language=="hindi"){
-	    	$this->lang->load('hindi_lang', 'hindi');
-		}else if($language=="german"){
-	    	$this->lang->load('german_lang', 'german');
-		}else{
-	    	$this->lang->load('spanish_lang', 'spanish');
-		}
-	}
+        if ($language == "french") {
+            $this->lang->load('french_lang', 'french');
+        } else if ($language == "arabic") {
+            $this->lang->load('arabic_lang', 'arabic');
+        } else if ($language == "english") {
+            $this->lang->load('english_lang', 'english');
+        } else if ($language == "hindi") {
+            $this->lang->load('hindi_lang', 'hindi');
+        } else if ($language == "german") {
+            $this->lang->load('german_lang', 'german');
+        } else {
+            $this->lang->load('spanish_lang', 'spanish');
+        }
+    }
 	public function index()
 	{
 		$header['title'] = $this->lang->line('ltr_dashboard');
@@ -266,54 +274,66 @@ class Admin_profile extends CI_Controller {
 		$this->load->view("common/admin_footer");
 	}
 
-	function student_manage(){
-		$header['title']=$this->lang->line('ltr_student_manager');
-		        
-		if($this->session->userdata('role') == 1 && $this->session->userdata('super_admin') == 1){
-            $cond = array('admin_id'=>$this->session->userdata('uid'));
+    function student_manage()
+    {
+        $header['title'] = $this->lang->line('ltr_student_manager');
+
+        if ($this->session->userdata('role') == 1 && $this->session->userdata('super_admin') == 1)
+        {
+            $cond = array('admin_id' => $this->session->userdata('uid'));
             $or_like = "";
-        }else{
-            $cond = array('admin_id'=>$this->session->userdata('uid'));
-             if($student_data[0][id] == $_SESSION['uid']){
+        }
+        else
+        {
+            $cond = array('admin_id' => $this->session->userdata('uid'));
+            if ($student_data[0][id] == $_SESSION['uid'])
+            {
                 $or_like = "";
-            }else{
-                $or_like = array(array('students.multi_batch',implode(",",json_decode($student_data[0]['multi_batch']))));
+            }
+            else
+            {
+                $or_like = array(array('students.multi_batch', implode(",", json_decode($student_data[0]['multi_batch']))));
             }
         }
-		$data['batch_name'] = $this->db_model->select_data('id,batch_name','batches  use index (id)',array('admin_id'=>$this->session->userdata('uid'),'status'=>1),'',array('id','desc'));
-		$data['student_data'] = $this->db_model->countAll('students',array('admin_id'=>$this->session->userdata('uid')));
-		$data['all_user'] = $this->db_model->select_data('id,name,role,super_admin','users use index (id)',array('admin_id'=>1 , 'role'=>1));
-		$this->load->view("common/admin_header",$header);
-		$this->load->view("admin/student_manage",$data); 
-		$this->load->view("common/admin_footer");
-	}
-	
-	function add_student($id=''){
-		$header['title']=$this->lang->line('ltr_add_student');
-		$data['student_id'] = $id;
+        $data['batch_name'] = $this->db_model->select_data('id,batch_name', 'batches  use index (id)', array('admin_id' => $this->session->userdata('uid'), 'status' => 1), '', array('id', 'desc'));
+        $data['student_data'] = $this->db_model->countAll('students', array('admin_id' => $this->session->userdata('uid')));
+        $data['all_user'] = $this->db_model->select_data('id,name,role,super_admin', 'users use index (id)', array('admin_id' => 1, 'role' => 1));
+        $this->load->view("common/admin_header", $header);
+        $this->load->view("admin/student_manage", $data);
+        $this->load->view("common/admin_footer");
+    }
 
-		if(!empty($id)){
+    function add_student($id = '')
+    {
+        $header['title'] = $this->lang->line('ltr_add_student');
+        $data['student_id'] = $id;
+
+        if (!empty($id))
+        {
 // 			$data['student_data'] = $this->db_model->select_data('*','students use index (id)',array('admin_id'=>$this->session->userdata('uid'),'id'=>$id));
-			$data['student_data'] = $this->db_model->select_data('*','students use index (id)',array('id'=>$id));
-			$header['title']=$this->lang->line('ltr_edit_student');
-		}else{
-			$header['title']=$this->lang->line('ltr_add_student');
-		}
-		if($_SESSION['super_admin']==1){
-		    $condon = array('admin_id'=>$_SESSION['uid'],'status'=>1,'pay_mode'=>'Online');
-		    $condof = array('admin_id'=>$_SESSION['uid'],'status'=>1,'pay_mode'=>'offline');
-		}else{
-		     $condon = array('admin_id'=>$this->session->userdata('uid'),'status'=>1,'pay_mode'=>'Online');
-		    $condof = array('admin_id'=>$this->session->userdata('uid'),'status'=>1,'pay_mode'=>'offline');
-		}
-		$data['batch_name_online'] = $this->db_model->select_data('id,batch_name','batches  use index (id)',$condon,'',array('id','desc'));
-		$data['batch_name_offline'] = $this->db_model->select_data('id,batch_name','batches  use index (id)',$condof,'',array('id','desc'));
-// 		print_r($data);
-// 		die();
-		$this->load->view("common/admin_header",$header);
-		$this->load->view("admin/add_student",$data); 
-		$this->load->view("common/admin_footer");
-	}
+            $data['student_data'] = $this->db_model->select_data('*', 'students use index (id)', array('id' => $id));
+            $header['title'] = $this->lang->line('ltr_edit_student');
+        }
+        else
+        {
+            $header['title'] = $this->lang->line('ltr_add_student');
+        }
+        if ($_SESSION['super_admin'] == 1)
+        {
+            $condon = array('admin_id' => $_SESSION['uid'], 'status' => 1, 'pay_mode' => 'Online');
+            $condof = array('admin_id' => $_SESSION['uid'], 'status' => 1, 'pay_mode' => 'offline');
+        }
+        else
+        {
+            $condon = array('admin_id' => $this->session->userdata('uid'), 'status' => 1, 'pay_mode' => 'Online');
+            $condof = array('admin_id' => $this->session->userdata('uid'), 'status' => 1, 'pay_mode' => 'offline');
+        }
+        $data['batch_name_online'] = $this->db_model->select_data('id,batch_name', 'batches  use index (id)', $condon, '', array('id', 'desc'));
+        $data['batch_name_offline'] = $this->db_model->select_data('id,batch_name', 'batches  use index (id)', $condof, '', array('id', 'desc'));
+        $this->load->view("common/admin_header", $header);
+        $this->load->view("admin/add_student", $data);
+        $this->load->view("common/admin_footer");
+    }
 
 	function subject_manage(){
 		

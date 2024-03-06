@@ -51,9 +51,11 @@ class Home extends CI_Controller {
 	
     function chekLogin(){
         $data = $_REQUEST;
-        if(isset($data['student_id']) && isset($data['token'])){
+
+        if(isset($data['student_id']) && isset($data['token']) && isset($data['batch_id'])){
             $student_id = trim($data['student_id']);
             $token  =  trim($data['token']);
+            $batch_id = trim($data['batch_id']);
             // $batch_id  =  trim($data['batch_id']);
             $studentDetails = $this->db_model->select_data('login_status,status,token','students use index (id)',array('id'=>$student_id),1);
             $batch_details = $this->db_model->select_data('id,status','batches use index (id)',array('id'=>$batch_id),1);
@@ -2279,47 +2281,60 @@ $search = trim($data['search']);
 		echo json_encode($resp,JSON_UNESCAPED_SLASHES);
         
     }
-	
-	function get_doubts_ask(){
+
+    function get_doubts_ask()
+    {
         $data = $_REQUEST;
-		if(!empty($data['student_id'])){
-			$adm_id = $this->db_model->select_data('*','students',array('id'=>$data['student_id']));
-	    	if($this->session->userdata('role')==1){
-                $cond = array('admin_id'=>$_SESSION['uid']);
-                if(!empty($get['subject'])){
-                    $cond.=" subjects_id=".$get['subject'];
-                }
-            }else{
-                $cond = "teacher_id = $tid";
-                if(!empty($get['subject'])){
-                    $cond.=" AND subjects_id=".$get['subject'];
+        if (!empty($data['student_id']))
+        {
+            $adm_id = $this->db_model->select_data('*', 'students', array('id' => $data['student_id']));
+            if ($this->session->userdata('role') == 1)
+            {
+                $cond = array('admin_id' => $_SESSION['uid']);
+                if (!empty($get['subject']))
+                {
+                    $cond .= " subjects_id=" . $get['subject'];
                 }
             }
-			$checkusers = $this->db_model->select_data('doubt_id as doubtId, student_id as studentId, teacher_id as teacherId, batch_id as batchId, subjects_id as subjectsId, chapters_id as chaptersId, users_description as usersDescription, teacher_description as teacherDescription, appointment_date as appointmentDate, appointment_time as appointmentTime, create_at as createAt, status','student_doubts_class',array('student_id'=>$data['student_id'],'batch_id'=>$adm_id[0]['batch_id']),'',array('doubtId ','desc'));
-			if(!empty($checkusers)){
-				
-				foreach($checkusers as $key=>$value){
-					
-					$teaNam= $this->db_model->select_data('name','users',array('id'=>$value['teacherId']),'',array('id ','desc'));
-					$batchNam= $this->db_model->select_data('batch_name','batches',array('id'=>$value['batchId']),'',array('id ','desc'));
-					$subNam= $this->db_model->select_data('subject_name','subjects',array('id'=>$value['subjectsId']),'',array('id ','desc'));
-					$chrNam= $this->db_model->select_data('chapter_name','chapters',array('id'=>$value['chaptersId']),'',array('id ','desc'));
-					
-					$checkusers[$key]['teacherName'] = !empty($teaNam[0]['name'])?$teaNam[0]['name']:'';
-					$checkusers[$key]['batchName'] = !empty($batchNam[0]['batch_name'])?$batchNam[0]['batch_name']:'';
-					$checkusers[$key]['subjectName'] = !empty($subNam[0]['subject_name'])?$subNam[0]['subject_name']:'';
-					$checkusers[$key]['chapterName'] = !empty($chrNam[0]['chapter_name'])?$chrNam[0]['chapter_name']:'';
-				}
-				$resp = array('status'=>'true','msg'=>$this->lang->line('ltr_fetch_successfully'), 'doubtsData'=>$checkusers);
-				
-			}else{
-				$resp = array('status'=>'false','msg'=>$this->lang->line('ltr_no_record_msg'));
-			}
-		}else{
-			$resp = array('status'=>'false','msg'=>$this->lang->line('ltr_missing_parameters_msg')); 
-		} 
-		echo json_encode($resp,JSON_UNESCAPED_SLASHES);
-        
+            else
+            {
+                $cond = "teacher_id = $tid";
+                if (!empty($get['subject']))
+                {
+                    $cond .= " AND subjects_id=" . $get['subject'];
+                }
+            }
+            $checkusers = $this->db_model->select_data('doubt_id as doubtId, student_id as studentId, teacher_id as teacherId, batch_id as batchId, subjects_id as subjectsId, chapters_id as chaptersId, users_description as usersDescription, teacher_description as teacherDescription, appointment_date as appointmentDate, appointment_time as appointmentTime, create_at as createAt, status', 'student_doubts_class', array('student_id' => $data['student_id'], 'batch_id' => $adm_id[0]['batch_id']), '', array('doubtId ', 'desc'));
+            if (!empty($checkusers))
+            {
+
+                foreach ($checkusers as $key => $value)
+                {
+
+                    $teaNam = $this->db_model->select_data('name', 'users', array('id' => $value['teacherId']), '', array('id ', 'desc'));
+                    $batchNam = $this->db_model->select_data('batch_name', 'batches', array('id' => $value['batchId']), '', array('id ', 'desc'));
+                    $subNam = $this->db_model->select_data('subject_name', 'subjects', array('id' => $value['subjectsId']), '', array('id ', 'desc'));
+                    $chrNam = $this->db_model->select_data('chapter_name', 'chapters', array('id' => $value['chaptersId']), '', array('id ', 'desc'));
+
+                    $checkusers[$key]['teacherName'] = !empty($teaNam[0]['name']) ? $teaNam[0]['name'] : '';
+                    $checkusers[$key]['batchName'] = !empty($batchNam[0]['batch_name']) ? $batchNam[0]['batch_name'] : '';
+                    $checkusers[$key]['subjectName'] = !empty($subNam[0]['subject_name']) ? $subNam[0]['subject_name'] : '';
+                    $checkusers[$key]['chapterName'] = !empty($chrNam[0]['chapter_name']) ? $chrNam[0]['chapter_name'] : '';
+                }
+                $resp = array('status' => 'true', 'msg' => $this->lang->line('ltr_fetch_successfully'), 'doubtsData' => $checkusers);
+
+            }
+            else
+            {
+                $resp = array('status' => 'false', 'msg' => $this->lang->line('ltr_no_record_msg'));
+            }
+        }
+        else
+        {
+            $resp = array('status' => 'false', 'msg' => $this->lang->line('ltr_missing_parameters_msg'));
+        }
+        echo json_encode($resp, JSON_UNESCAPED_SLASHES);
+
     }
     
 	function pay_batch_fee(){
@@ -3049,173 +3064,218 @@ $search = trim($data['search']);
         }
         echo json_encode($arr);
     }
-  
-  
-    function get_all_data(){
+
+
+    function get_all_data()
+    {
         $data = $_REQUEST;
-        
+
         $subcat = $data['subcat'];
-        if(!empty($subcat)){
-       
-                 
-      if(isset($data['length']) && $data['length']>0){
-            if(isset($data['start']) && !empty($data['start'])){
-                $limit = array($data['length'],$data['start']);
-                // $count = $data['start']+1;
-            }else{ 
-                $limit = array($data['length'],0);
+        if (!empty($subcat))
+        {
+
+
+            if (isset($data['length']) && $data['length'] > 0)
+            {
+                if (isset($data['start']) && !empty($data['start']))
+                {
+                    $limit = array($data['length'], $data['start']);
+                    // $count = $data['start']+1;
+                }
+                else
+                {
+                    $limit = array($data['length'], 0);
+                    // $count = 1;
+                }
+            }
+            else
+            {
+                $limit = '';
                 // $count = 1;
             }
-        }else{
-            $limit = '';
-            // $count = 1;
-        }
-        
-         $slider_limit = $data['limit'];
-        $category = $this->db_model->select_data('id as categoryId,name as categoryName','batch_category use index (id)',array('status'=>1));
-                     if(!empty($category)){
-                        
-                        foreach($category as $catkey=>$value){
-                                 
 
-            $cond = array('status'=>1,'cat_id'=>$value['categoryId'],'id'=>$subcat);
-            
-                    $subCategory = $this->db_model->select_data('id as SubcategoryId,name as SubcategoryName','batch_subcategory use index (id)',$cond,'','');
-            
-                    if(!empty($subCategory)){
-                        
-                        foreach($subCategory as $subkey=>$value){
-                    
-                     $search = trim($data['search']);
-                    if(!empty($search)){
-                      $like_search = array('batch_name',$search);
-                       $cond_sub1='';
-                    }
-                    
-                    else{
-                        
-                        $like_search = '';
-                        $cond_sub1 = array('status'=>1,'sub_cat_id'=>$value['SubcategoryId']);
-                    }
-                  
-                   
-$batchData = $this->db_model->select_data('id, batch_name as batchName, start_date as startDate, end_date as endDate, start_time as startTime, end_time as endTime, batch_type as batchType, batch_price as batchPrice, no_of_student as noOfStudent ,status,description, batch_image as batchImage, batch_offer_price as batchOfferPrice','batches use index (id)',$cond_sub1,$limit,array('id','desc'),$like_search);
- 
-            if(!empty($batchData)){
-                foreach($batchData as $key=>$value){
-                    if(!empty($value['batchImage'])){
-                        $batchData[$key]['batchImage']= base_url('uploads/batch_image/').$value['batchImage'];
-                    }
-                    $startDate =$value['startDate'];
-                    $endDate =$value['endDate'];
-                    $batchData[$key]['startDate']=date('d-m-Y',strtotime($startDate));
-                    $batchData[$key]['endDate']=date('d-m-Y',strtotime($endDate));
-                   
-                    $batch_fecherd =$this->db_model->select_data('batch_specification_heading as batchSpecification, batch_fecherd as fecherd','batch_fecherd',array('batch_id'=>$value['id']));
-                    if(!empty($batch_fecherd)){
-                           $batchData[$key]['batchFecherd'] =$batch_fecherd;
-                    }else{
-                        $batchData[$key]['batchFecherd']=array();
-                    }
+            $slider_limit = $data['limit'];
+            $category = $this->db_model->select_data('id as categoryId,name as categoryName', 'batch_category use index (id)', array('status' => 1));
+            if (!empty($category))
+            {
 
-                   // add payment type
-                   $batchData[$key]['paymentType'] = $this->general_settings('payment_type');
-                   $batchData[$key]['currencyCode'] = $this->general_settings('currency_code');
-                   $batchData[$key]['currencyDecimalCode'] = $this->general_settings('currency_decimal_code');
-                   
-                   
-                   $batchSubject = $this->db_model->select_data('subjects.id,subjects.subject_name as subjectName, batch_subjects.chapter','subjects use index (id)',array('batch_id'=>$value['id']),'',array('id','desc'),'',array('batch_subjects','batch_subjects.subject_id=subjects.id'));
-                   if(!empty($batchSubject)){
-                       foreach($batchSubject as $skey=>$svalue){
-                            $cid=implode(', ',json_decode($svalue['chapter']));
-                            $con ="id in ($cid)";
-                            $chapter =$this->db_model->select_data('id,chapter_name as chapterName','chapters use index (id)',$con,'',array('id','desc'));
-                            if(!empty($chapter)){
-                                foreach($chapter as $ckey=>$cvalue){
-                                    
-                                    $sub_like = array('topic,batch',urldecode($cvalue['chapterName']).',"'.$value['id'].'"');
-                                    $sub_videos = $this->db_model->select_data('id,admin_id as adminId,title,batch,topic,subject,url,status,added_by as addedBy,added_at as addedAt,video_type as videoType, preview_type as previewType, description','video_lectures use index (id)',array('status'=>1),'',array('id','desc'),$sub_like);
-                                    if(!empty($sub_videos)){
-                                        foreach($sub_videos as $vkey=>$vvalue){
+                foreach ($category as $catkey => $value)
+                {
+
+
+                    $cond = array('status' => 1, 'cat_id' => $value['categoryId'], 'id' => $subcat);
+
+                    $subCategory = $this->db_model->select_data('id as SubcategoryId,name as SubcategoryName', 'batch_subcategory use index (id)', $cond, '', '');
+
+                    if (!empty($subCategory))
+                    {
+
+                        foreach ($subCategory as $subkey => $value)
+                        {
+
+                            $search = trim($data['search']);
+                            if (!empty($search))
+                            {
+                                $like_search = array('batch_name', $search);
+                                $cond_sub1 = '';
+                            }
+
+                            else
+                            {
+
+                                $like_search = '';
+                                $cond_sub1 = array('status' => 1, 'sub_cat_id' => $value['SubcategoryId']);
+                            }
+
+
+                            $batchData = $this->db_model->select_data('id, batch_name as batchName, start_date as startDate, end_date as endDate, start_time as startTime, end_time as endTime, batch_type as batchType, batch_price as batchPrice, no_of_student as noOfStudent ,status,description, batch_image as batchImage, batch_offer_price as batchOfferPrice', 'batches use index (id)', $cond_sub1, $limit, array('id', 'desc'), $like_search);
+
+                            if (!empty($batchData))
+                            {
+                                foreach ($batchData as $key => $value)
+                                {
+                                    if (!empty($value['batchImage']))
+                                    {
+                                        $batchData[$key]['batchImage'] = base_url('uploads/batch_image/') . $value['batchImage'];
+                                    }
+                                    $startDate = $value['startDate'];
+                                    $endDate = $value['endDate'];
+                                    $batchData[$key]['startDate'] = date('d-m-Y', strtotime($startDate));
+                                    $batchData[$key]['endDate'] = date('d-m-Y', strtotime($endDate));
+
+                                    $batch_fecherd = $this->db_model->select_data('batch_specification_heading as batchSpecification, batch_fecherd as fecherd', 'batch_fecherd', array('batch_id' => $value['id']));
+                                    if (!empty($batch_fecherd))
+                                    {
+                                        $batchData[$key]['batchFecherd'] = $batch_fecherd;
+                                    }
+                                    else
+                                    {
+                                        $batchData[$key]['batchFecherd'] = array();
+                                    }
+
+                                    // add payment type
+                                    $batchData[$key]['paymentType'] = $this->general_settings('payment_type');
+                                    $batchData[$key]['currencyCode'] = $this->general_settings('currency_code');
+                                    $batchData[$key]['currencyDecimalCode'] = $this->general_settings('currency_decimal_code');
+
+
+                                    $batchSubject = $this->db_model->select_data('subjects.id,subjects.subject_name as subjectName, batch_subjects.chapter', 'subjects use index (id)', array('batch_id' => $value['id']), '', array('id', 'desc'), '', array('batch_subjects', 'batch_subjects.subject_id=subjects.id'));
+                                    if (!empty($batchSubject))
+                                    {
+                                        foreach ($batchSubject as $skey => $svalue)
+                                        {
+                                            $cid = implode(', ', json_decode($svalue['chapter']));
+                                            $con = "id in ($cid)";
+                                            $chapter = $this->db_model->select_data('id,chapter_name as chapterName', 'chapters use index (id)', $con, '', array('id', 'desc'));
+                                            if (!empty($chapter))
+                                            {
+                                                foreach ($chapter as $ckey => $cvalue)
+                                                {
+
+                                                    $sub_like = array('topic,batch', urldecode($cvalue['chapterName']) . ',"' . $value['id'] . '"');
+                                                    $sub_videos = $this->db_model->select_data('id,admin_id as adminId,title,batch,topic,subject,url,status,added_by as addedBy,added_at as addedAt,video_type as videoType, preview_type as previewType, description', 'video_lectures use index (id)', array('status' => 1), '', array('id', 'desc'), $sub_like);
+                                                    if (!empty($sub_videos))
+                                                    {
+                                                        foreach ($sub_videos as $vkey => $vvalue)
+                                                        {
+                                                            $url = $vvalue['url'];
+                                                            preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $url, $match);
+                                                            $sub_videos[$vkey]['videoId'] = $match[1];
+                                                        }
+                                                        $chapter[$ckey]['videoLectures'] = $sub_videos;
+                                                    }
+                                                    else
+                                                    {
+                                                        $chapter[$ckey]['videoLectures'] = array();
+                                                    }
+
+
+                                                }
+                                                $batchSubject[$skey]['chapter'] = $chapter;
+                                            }
+                                            else
+                                            {
+                                                $batchSubject[$skey]['chapter'] = array();
+                                            }
+
+                                        }
+
+                                        $batchData[$key]['batchSubject'] = $batchSubject;
+                                    }
+                                    else
+                                    {
+                                        $batchData[$key]['batchSubject'] = array();
+                                    }
+                                    $like = array('batch', '"' . $value['id'] . '"');
+                                    $videos = $this->db_model->select_data('id,admin_id as adminId,title,batch,topic,subject,url,status,added_by as addedBy,added_at as addedAt,video_type as videoType, preview_type as previewType, description', 'video_lectures use index (id)', array('status' => 1), '', array('id', 'desc'), $like);
+                                    if (!empty($videos))
+                                    {
+                                        foreach ($videos as $vkey => $vvalue)
+                                        {
                                             $url = $vvalue['url'];
                                             preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $url, $match);
-                                            $sub_videos[$vkey]['videoId']=$match[1];
+                                            $videos[$vkey]['videoId'] = $match[1];
                                         }
-                                        $chapter[$ckey]['videoLectures']=$sub_videos;
-                                    }else{
-                                      $chapter[$ckey]['videoLectures'] = array(); 
+                                        $batchData[$key]['videoLectures'] = $videos;
                                     }
-                                    
-                                    
+                                    else
+                                    {
+                                        $batchData[$key]['videoLectures'] = array();
+                                    }
+                                    $student_batch_dtail = $this->db_model->select_data('*', 'sudent_batchs', array('student_id' => $data['student_id'], 'batch_id' => $value['id']), '');
+                                    if (!empty($student_batch_dtail))
+                                    {
+                                        $batchData[$key]['purchase_condition'] = true;
+                                    }
+                                    else
+                                    {
+                                        $batchData[$key]['purchase_condition'] = false;
+                                    }
                                 }
-                                $batchSubject[$skey]['chapter']=$chapter;
-                            }else{
-                             $batchSubject[$skey]['chapter']=array();   
+                                $subCategory[$subkey]['BatchData'] = $batchData;
                             }
-                       
-                       }
-                       
-                       $batchData[$key]['batchSubject'] = $batchSubject;
-                   }else{
-                     $batchData[$key]['batchSubject'] = array();  
-                   }
-                    $like = array('batch','"'.$value['id'].'"');
-                    $videos = $this->db_model->select_data('id,admin_id as adminId,title,batch,topic,subject,url,status,added_by as addedBy,added_at as addedAt,video_type as videoType, preview_type as previewType, description','video_lectures use index (id)',array('status'=>1),'',array('id','desc'),$like);
-                    if(!empty($videos)){
-                        foreach($videos as $vkey=>$vvalue){
-                            $url = $vvalue['url'];
-                            preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $url, $match);
-                            $videos[$vkey]['videoId']=$match[1];
-                        }
-                        $batchData[$key]['videoLectures']=$videos;
-                    }else{
-                      $batchData[$key]['videoLectures'] = array(); 
-                    }
-                   $student_batch_dtail = $this->db_model->select_data('*','sudent_batchs',array('student_id'=>$data['student_id'],'batch_id' => $value['id'] ),'');
-                   if(!empty($student_batch_dtail)){
-                        $batchData[$key]['purchase_condition'] = true;
-                   }else{
-                       $batchData[$key]['purchase_condition'] = false;
-                   }
-                }
-                    $subCategory[$subkey]['BatchData'] = $batchData;
-                    }else{
-                       
+                            else
+                            {
+
                                 $subCategory[$subkey]['BatchData'] = array();
-                               }
+                            }
                         }
-                         $category[$catkey]['subcategory'] = $subCategory;
-                   }else{
-                           $category[$catkey]['subcategory'] = array();
-                   }
-                  
-                }
-            
-            }
-                    
-                 if($data['subcat']=='other'){
-                    $getOther_Batch=$this->otherBatch_data($data);
-                 /*print_r($getOther_Batch);
-                die();*/
-                    if($getOther_Batch){
-                        array_push($category,$getOther_Batch);
+                        $category[$catkey]['subcategory'] = $subCategory;
                     }
-                 }
-                        
-                     $category=array_values($category);    
-            $arr = array(           
-                            'status'=>'true',
-                            'msg' =>$this->lang->line('ltr_fetch_successfully'),
-                            'batchData'=>$category
-                            );
+                    else
+                    {
+                        $category[$catkey]['subcategory'] = array();
+                    }
+
+                }
+
+            }
+
+            if ($data['subcat'] == 'other')
+            {
+                $getOther_Batch = $this->otherBatch_data($data);
+                /*print_r($getOther_Batch);
+               die();*/
+                if ($getOther_Batch)
+                {
+                    array_push($category, $getOther_Batch);
+                }
+            }
+
+            $category = array_values($category);
+            $arr = array(
+                'status' => 'true',
+                'msg' => $this->lang->line('ltr_fetch_successfully'),
+                'batchData' => $category
+            );
         }
-            
-   //     elseif(!empty($data['search'])){
-            
-   //       $search = trim($data['search']);
-         // $like_search = array('batch_name',$search);
-          
-   // 	if(isset($data['length']) && $data['length']>0){
+
+        //     elseif(!empty($data['search'])){
+
+        //       $search = trim($data['search']);
+        // $like_search = array('batch_name',$search);
+
+        // 	if(isset($data['length']) && $data['length']>0){
 //             if(isset($data['start']) && !empty($data['start'])){
 //                 $limit = array($data['length'],$data['start']);
 //                 // $count = $data['start']+1;
@@ -3228,61 +3288,61 @@ $batchData = $this->db_model->select_data('id, batch_name as batchName, start_da
 //             // $count = 1;
 //         }
 
-   //         //  $slider_limit = $data['limit'];
-   //         $category = $this->db_model->select_data('id as categoryId,name as categoryName','batch_category use index (id)',array('status'=>1),$limit);
-            // 	     if(!empty($category)){
-                        
-            // 	        foreach($category as $catkey=>$value){
-                                 
-            // 	   //  }
-                   
-            // 	   // $cond="id not in ($batch_id) AND status=1 AND cat_id= $value['id']";
-            // 	   $cond = array('status'=>1,'cat_id'=>$value['categoryId']);
-                   
-            // 	     $subCategory = $this->db_model->select_data('id as SubcategoryId,name as SubcategoryName','batch_subcategory use index (id)',$cond,'','',array('id',$data['subcat']));
-            // 	   // echo $this->db->last_query();
-            // 	    if(!empty($subCategory)){
-                        
-            // 	        foreach($subCategory as $subkey=>$value){
-                    
-                     
-            // 	   $cond_sub1 = array('status'=>1,'sub_cat_id'=>$value['SubcategoryId']);
-                   
-   //                $batchData = $this->db_model->select_data('id, batch_name as batchName, start_date as startDate, end_date as endDate, start_time as startTime, end_time as endTime, batch_type as batchType, batch_price as batchPrice, no_of_student as noOfStudent ,status,description, batch_image as batchImage, batch_offer_price as batchOfferPrice','batches use index (id)',$cond_sub1,$slider_limit,array('id','desc'),$like_search);
-   
-            // if(!empty($batchData)){
-            // 	foreach($batchData as $key=>$value){
-            // 		if(!empty($value['batchImage'])){
-            // 			$batchData[$key]['batchImage']= base_url('uploads/batch_image/').$value['batchImage'];
-            // 		}
-            // 		$startDate =$value['startDate'];
-            // 		$endDate =$value['endDate'];
+        //         //  $slider_limit = $data['limit'];
+        //         $category = $this->db_model->select_data('id as categoryId,name as categoryName','batch_category use index (id)',array('status'=>1),$limit);
+        // 	     if(!empty($category)){
+
+        // 	        foreach($category as $catkey=>$value){
+
+        // 	   //  }
+
+        // 	   // $cond="id not in ($batch_id) AND status=1 AND cat_id= $value['id']";
+        // 	   $cond = array('status'=>1,'cat_id'=>$value['categoryId']);
+
+        // 	     $subCategory = $this->db_model->select_data('id as SubcategoryId,name as SubcategoryName','batch_subcategory use index (id)',$cond,'','',array('id',$data['subcat']));
+        // 	   // echo $this->db->last_query();
+        // 	    if(!empty($subCategory)){
+
+        // 	        foreach($subCategory as $subkey=>$value){
+
+
+        // 	   $cond_sub1 = array('status'=>1,'sub_cat_id'=>$value['SubcategoryId']);
+
+        //                $batchData = $this->db_model->select_data('id, batch_name as batchName, start_date as startDate, end_date as endDate, start_time as startTime, end_time as endTime, batch_type as batchType, batch_price as batchPrice, no_of_student as noOfStudent ,status,description, batch_image as batchImage, batch_offer_price as batchOfferPrice','batches use index (id)',$cond_sub1,$slider_limit,array('id','desc'),$like_search);
+
+        // if(!empty($batchData)){
+        // 	foreach($batchData as $key=>$value){
+        // 		if(!empty($value['batchImage'])){
+        // 			$batchData[$key]['batchImage']= base_url('uploads/batch_image/').$value['batchImage'];
+        // 		}
+        // 		$startDate =$value['startDate'];
+        // 		$endDate =$value['endDate'];
 //                     $batchData[$key]['startDate']=date('d-m-Y',strtotime($startDate));
 //                     $batchData[$key]['endDate']=date('d-m-Y',strtotime($endDate));
-                   
-            // 		$batch_fecherd =$this->db_model->select_data('batch_specification_heading as batchSpecification, batch_fecherd as fecherd','batch_fecherd',array('batch_id'=>$value['id']));
-            // 		if(!empty($batch_fecherd)){
-            // 			   $batchData[$key]['batchFecherd'] =$batch_fecherd;
-            // 		}else{
-            // 			$batchData[$key]['batchFecherd']=array();
-            // 		}
 
-            // 	   // add payment type
-            // 	   $batchData[$key]['paymentType'] = $this->general_settings('payment_type');
-            // 	   $batchData[$key]['currencyCode'] = $this->general_settings('currency_code');
-            // 	   $batchData[$key]['currencyDecimalCode'] = $this->general_settings('currency_decimal_code');
-                   
-                   
-            // 	   $batchSubject = $this->db_model->select_data('subjects.id,subjects.subject_name as subjectName, batch_subjects.chapter','subjects use index (id)',array('batch_id'=>$value['id']),'',array('id','desc'),'',array('batch_subjects','batch_subjects.subject_id=subjects.id'));
-            // 	   if(!empty($batchSubject)){
-            // 	       foreach($batchSubject as $skey=>$svalue){
-            // 	            $cid=implode(', ',json_decode($svalue['chapter']));
-            // 	            $con ="id in ($cid)";
-            // 	            $chapter =$this->db_model->select_data('id,chapter_name as chapterName','chapters use index (id)',$con,'',array('id','desc'));
-            // 	            if(!empty($chapter)){
-            // 	                foreach($chapter as $ckey=>$cvalue){
-                                    
-            // 	                    $sub_like = array('topic,batch',urldecode($cvalue['chapterName']).',"'.$value['id'].'"');
+        // 		$batch_fecherd =$this->db_model->select_data('batch_specification_heading as batchSpecification, batch_fecherd as fecherd','batch_fecherd',array('batch_id'=>$value['id']));
+        // 		if(!empty($batch_fecherd)){
+        // 			   $batchData[$key]['batchFecherd'] =$batch_fecherd;
+        // 		}else{
+        // 			$batchData[$key]['batchFecherd']=array();
+        // 		}
+
+        // 	   // add payment type
+        // 	   $batchData[$key]['paymentType'] = $this->general_settings('payment_type');
+        // 	   $batchData[$key]['currencyCode'] = $this->general_settings('currency_code');
+        // 	   $batchData[$key]['currencyDecimalCode'] = $this->general_settings('currency_decimal_code');
+
+
+        // 	   $batchSubject = $this->db_model->select_data('subjects.id,subjects.subject_name as subjectName, batch_subjects.chapter','subjects use index (id)',array('batch_id'=>$value['id']),'',array('id','desc'),'',array('batch_subjects','batch_subjects.subject_id=subjects.id'));
+        // 	   if(!empty($batchSubject)){
+        // 	       foreach($batchSubject as $skey=>$svalue){
+        // 	            $cid=implode(', ',json_decode($svalue['chapter']));
+        // 	            $con ="id in ($cid)";
+        // 	            $chapter =$this->db_model->select_data('id,chapter_name as chapterName','chapters use index (id)',$con,'',array('id','desc'));
+        // 	            if(!empty($chapter)){
+        // 	                foreach($chapter as $ckey=>$cvalue){
+
+        // 	                    $sub_like = array('topic,batch',urldecode($cvalue['chapterName']).',"'.$value['id'].'"');
 //             					    $sub_videos = $this->db_model->select_data('id,admin_id as adminId,title,batch,topic,subject,url,status,added_by as addedBy,added_at as addedAt,video_type as videoType, preview_type as previewType, description','video_lectures use index (id)',array('status'=>1),'',array('id','desc'),$sub_like);
 //                                     if(!empty($sub_videos)){
 //                                         foreach($sub_videos as $vkey=>$vvalue){
@@ -3294,23 +3354,23 @@ $batchData = $this->db_model->select_data('id, batch_name as batchName, start_da
 //                                     }else{
 //                                       $chapter[$ckey]['videoLectures'] = array(); 
 //                                     }
-                                    
-                                    
-            // 	                }
-            // 	                $batchSubject[$skey]['chapter']=$chapter;
-            // 	            }else{
-            // 	             $batchSubject[$skey]['chapter']=array();   
-            // 	            }
-                            
-                            
-            // 	       }
-                       
-            // 	       $batchData[$key]['batchSubject'] = $batchSubject;
-            // 	   }else{
-            // 	     $batchData[$key]['batchSubject'] = array();  
-            // 	   }
-            // 	    $like = array('batch','"'.$value['id'].'"');
-            // 	    $videos = $this->db_model->select_data('id,admin_id as adminId,title,batch,topic,subject,url,status,added_by as addedBy,added_at as addedAt,video_type as videoType, preview_type as previewType, description','video_lectures use index (id)',array('status'=>1),'',array('id','desc'),$like);
+
+
+        // 	                }
+        // 	                $batchSubject[$skey]['chapter']=$chapter;
+        // 	            }else{
+        // 	             $batchSubject[$skey]['chapter']=array();
+        // 	            }
+
+
+        // 	       }
+
+        // 	       $batchData[$key]['batchSubject'] = $batchSubject;
+        // 	   }else{
+        // 	     $batchData[$key]['batchSubject'] = array();
+        // 	   }
+        // 	    $like = array('batch','"'.$value['id'].'"');
+        // 	    $videos = $this->db_model->select_data('id,admin_id as adminId,title,batch,topic,subject,url,status,added_by as addedBy,added_at as addedAt,video_type as videoType, preview_type as previewType, description','video_lectures use index (id)',array('status'=>1),'',array('id','desc'),$like);
 //                     if(!empty($videos)){
 //                         foreach($videos as $vkey=>$vvalue){
 //                             $url = $vvalue['url'];
@@ -3321,39 +3381,40 @@ $batchData = $this->db_model->select_data('id, batch_name as batchName, start_da
 //                     }else{
 //                       $batchData[$key]['videoLectures'] = array(); 
 //                     }
-            // 	   $student_batch_dtail = $this->db_model->select_data('*','sudent_batchs',array('student_id'=>$data['student_id'],'batch_id' => $value['id'] ),'');
-            // 	   if(!empty($student_batch_dtail)){
-            // 	        $batchData[$key]['purchase_condition'] = true;
-            // 	   }else{
-            // 	       $batchData[$key]['purchase_condition'] = false;
-            // 	   }
-            // 	}
+        // 	   $student_batch_dtail = $this->db_model->select_data('*','sudent_batchs',array('student_id'=>$data['student_id'],'batch_id' => $value['id'] ),'');
+        // 	   if(!empty($student_batch_dtail)){
+        // 	        $batchData[$key]['purchase_condition'] = true;
+        // 	   }else{
+        // 	       $batchData[$key]['purchase_condition'] = false;
+        // 	   }
+        // 	}
 //     			$subCategory[$subkey]['BatchData'] = $batchData;
-            
-            // 	    }else{
-                       
+
+        // 	    }else{
+
 //     					   	 $subCategory[$subkey]['BatchData'] = array();
 //     					   	}
-            // 			}
-            // 			 $category[$catkey]['subcategory'] = $subCategory;
-            // 	   }else{
-            // 	   		$category[$catkey]['subcategory'] = array();
-            // 	   }
-                  
-            // 	}
-            // }
+        // 			}
+        // 			 $category[$catkey]['subcategory'] = $subCategory;
+        // 	   }else{
+        // 	   		$category[$catkey]['subcategory'] = array();
+        // 	   }
 
-   //         $arr = array(           
-   //                         'status'=>'true',
-            //                 'msg' =>$this->lang->line('ltr_fetch_successfully'),
-            //                 'batchData'=>$category
-            //                 );
-              
-            // }
-            
-            else{
-                $arr = array('status'=>'false', 'msg' => $this->lang->line('ltr_missing_parameters_msg')); 
-            }
+        // 	}
+        // }
+
+        //         $arr = array(
+        //                         'status'=>'true',
+        //                 'msg' =>$this->lang->line('ltr_fetch_successfully'),
+        //                 'batchData'=>$category
+        //                 );
+
+        // }
+
+        else
+        {
+            $arr = array('status' => 'false', 'msg' => $this->lang->line('ltr_missing_parameters_msg'));
+        }
         echo json_encode($arr);
     }
 
@@ -3482,43 +3543,50 @@ $batchData = $this->db_model->select_data('id, batch_name as batchName, start_da
                                return false;
                            }
     }
-    
-   	public function certificate(){
+
+    public function certificate()
+    {
         $data = $_REQUEST;
-         if(isset($data['student_id'])){
-             $id=$data['student_id'];
+        $limit = '';
+        $like = '';
+        $or_like = '';
+        if (isset($data['student_id']))
+        {
+            $id = $data['student_id'];
             //  $batch_id = $data['batch_id'];
             $cond = array('sudent_batchs.student_id' => $id);
             $table = 'batches';
             $join = array('batches', 'sudent_batchs.batch_id = batches.id');
-            $batches = $this->db_model->select_data('batches.batch_name,sudent_batchs.batch_id,sudent_batchs.student_id','sudent_batchs',$cond,$limit,array('sudent_batchs.id','desc'),$like,$join,'',$or_like);
-               
-            if(!empty($batches)){
-                 
-                foreach($batches as $key => $cert){
+            $batches = $this->db_model->select_data('batches.batch_name,sudent_batchs.batch_id,sudent_batchs.student_id', 'sudent_batchs', $cond, $limit, array('sudent_batchs.id', 'desc'), $like, $join, '', $or_like);
+
+            if (!empty($batches))
+            {
+
+                foreach ($batches as $key => $cert)
+                {
                     $data['batchdata'] = $cert;
-                    $data['student_certificate'] = $this->db_model->select_data('*','certificate',array('student_id'=>$cert['student_id'],'batch_id'=>$cert['batch_id']));
-                    $data['certificate_details']=$this->db_model->select_data('*','certificate_setting','',1,array('id','desc'));
-                    $data['site_details_logo']=$this->db_model->select_data('site_logo','site_details','',1,array('id','desc'));
-                    $data['student_details']=$this->db_model->select_data('name','students',array('id'=>$id),1,array('id','desc'));
+                    $data['student_certificate'] = $this->db_model->select_data('*', 'certificate', array('student_id' => $cert['student_id'], 'batch_id' => $cert['batch_id']));
+                    $data['certificate_details'] = $this->db_model->select_data('*', 'certificate_setting', '', 1, array('id', 'desc'));
+                    $data['site_details_logo'] = $this->db_model->select_data('site_logo', 'site_details', '', 1, array('id', 'desc'));
+                    $data['student_details'] = $this->db_model->select_data('name', 'students', array('id' => $id), 1, array('id', 'desc'));
                     // $data['batchdata']=$this->db_model->select_data('batch_name','batches',array('id'=>$batch_id),1,array('id','desc'));
-                   
+
                     $data['baseurl'] = base_url();
-              
-                    $html=  $this->load->view("student/certificate_pdf",$data,true); 
-                 
+
+                    $html = $this->load->view("student/certificate_pdf", $data, true);
+
                     $this->load->library('pdf'); // change to pdf_ssl for ssl
                     // $filename = "certificate_".$id."_".$cert['batch_id'];
-                    $result=$this->pdf->create($html);
-                    
-                    $batches[$key]['filename']= "certificate_".$id."_".$cert['batch_id'].'.pdf';
-                    $batches[$key]['batch_name']= $cert['batch_name'];
-                    $batches[$key]['filesUrl']= base_url('uploads/certificate/');
+                    $result = $this->pdf->create($html);
+
+                    $batches[$key]['filename'] = "certificate_" . $id . "_" . $cert['batch_id'] . '.pdf';
+                    $batches[$key]['batch_name'] = $cert['batch_name'];
+                    $batches[$key]['filesUrl'] = base_url('uploads/certificate/');
                     $batches[$key]['assign'] = $data['student_certificate'] ? true : false;
-                    
-                    $file_path= explode("application",APPPATH);
-                    file_put_contents($file_path[0].'uploads/certificate/'.$batches[$key]['filename'], $result);
-                   
+
+                    $file_path = explode("application", APPPATH);
+                    file_put_contents($file_path[0] . 'uploads/certificate/' . $batches[$key]['filename'], $result);
+
                 }
 
                 $arr = array(
@@ -3526,21 +3594,24 @@ $batchData = $this->db_model->select_data('id, batch_name as batchName, start_da
                     'status' => 'true',
                     'msg' => $this->lang->line('ltr_fetch_successfully')
                 );
-           
-             }
-             else{
-                 $arr = array(
-                     'status' => 'false',
-                     'msg' => $this->lang->line('ltr_no_record_msg')
-                 );
-             }
-         }else{
-             $arr = array(
-                 'status'=>'false',
-                 'msg'=>$this->lang->line('ltr_missing_parameters_msg')
-             );
-         }
-         echo json_encode($arr);
+
+            }
+            else
+            {
+                $arr = array(
+                    'status' => 'false',
+                    'msg' => $this->lang->line('ltr_no_record_msg')
+                );
+            }
+        }
+        else
+        {
+            $arr = array(
+                'status' => 'false',
+                'msg' => $this->lang->line('ltr_missing_parameters_msg')
+            );
+        }
+        echo json_encode($arr);
     }
     
 }
