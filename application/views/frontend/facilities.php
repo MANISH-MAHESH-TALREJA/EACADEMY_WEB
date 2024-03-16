@@ -22,7 +22,7 @@
 						<div class="edu_heading_wrapper">
 							<h4 class="edu_subTitle"><?php echo !empty($frontend_details[0]['faci_sub_heading'])?$frontend_details[0]['faci_sub_heading']:'E-Academy';?></h4>
 							<h4 class="edu_heading"><?php $ea =html_escape($this->common->languageTranslator('ltr_our_facilities')); echo !empty($frontend_details[0]['faci_heading'])?$frontend_details[0]['faci_heading']: $ea ;?></h4>
-							<img src="<?php echo base_url(); ?>assets/images/border.png" alt=""/>
+							<img class="border_images" src="<?php echo base_url(); ?>assets/images/border.png" alt=""/>
 						</div>
 					</div>
 					<?php

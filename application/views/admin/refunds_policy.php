@@ -7,12 +7,12 @@
 							<div class="col-lg-12 col-md-12 col-sm-12 col-12">
 							    <div class="form-group">
 									<label><?php echo html_escape($this->common->languageTranslator('ltr_description'));?><sup>*</sup></label>
-									<textarea rows="3" class="form-control description require" id="description" name="description"  placeholder="<?php echo html_escape($this->common->languageTranslator('ltr_description'));?>"><?php echo !empty($terms_condition)?$terms_condition['0']['description']:'';?></textarea>
+									<textarea rows="3" class="form-control description require" id="description" name="description"  placeholder="<?php echo html_escape($this->common->languageTranslator('ltr_description'));?>"><?php echo !empty($refund_policy)?$refund_policy['0']['description']:'';?></textarea>
 								</div>
 							</div>
 							<div class="edu_btn_wrapper">
 								<div class="col-lg-12 col-md-12 col-sm-12 col-12 edu_btn-top-space"> 
-									<button type="button" class="btn btn-primary update_terms_and_conditions"><?php echo html_escape($this->common->languageTranslator('ltr_save'));?></button>
+									<button type="button" class="btn btn-primary update_refund_policy"><?php echo html_escape($this->common->languageTranslator('ltr_save'));?></button>
 								</div>
 							</div>
 						</div>

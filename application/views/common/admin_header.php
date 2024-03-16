@@ -1059,7 +1059,8 @@ $logo = current($this->db_model->select_data('*','users use index (id)',array('i
                             <li <?php echo (in_array("contact-page",$cur_arr))?'class="active"':''; ?>><a href="<?php echo base_url();?>admin/contact-page"><?php echo html_escape($this->common->languageTranslator('ltr_contact_page'));?></a></li>
                             <li <?php echo (in_array("privacy-policy",$cur_arr))?'class="active"':''; ?>><a href="<?php echo base_url();?>admin/privacy-policy"><?php echo html_escape($this->common->languageTranslator('ltr_privacy_policy'));?></a></li>
                                 <li <?php echo (in_array("terms-conditions",$cur_arr))?'class="active"':''; ?>><a href="<?php echo base_url();?>admin/terms-conditions"><?php echo html_escape($this->common->languageTranslator('ltr_terms_conditions'));?></a></li>
-                        </ul> 
+                                <li <?php echo (in_array("refunds-policy",$cur_arr))?'class="active"':''; ?>><a href="<?php echo base_url();?>admin/refunds-policy"><?php echo html_escape($this->common->languageTranslator('ltr_refund_policy'));?></a></li>
+                        </ul>
                     </li>
                 
                 <li class="has_sub_menu <?php echo (in_array("general-settings",$cur_arr))?'active':''; ?>"><a href="javascript:void(0);">

@@ -28,12 +28,13 @@
 						<ul>
 						<?php 
 						$batches = $this->db_model->select_data('*','batches use index (id)',array('status'=>'1','admin_id'=>'1'),6);
-							if(!empty($batches)){
-								// foreach($batches as $crs){ 
-								    for($i=0;$i<6;$i++){
-									echo '<li><a href="'.base_url('courses-details/'.$batches[$i]['id']).'"><span>'.$batches[$i]['batch_name'].'</span></a></li>';							
-								}
-							}
+                        if (!empty($batches))
+                        {
+                            for ($i = 0; $i < count($batches); $i++)
+                            {
+                                echo '<li><a href="' . base_url('courses-details/' . $batches[$i]['id']) . '"><span>' . $batches[$i]['batch_name'] . '</span></a></li>';
+                            }
+                        }
 							?>
 						</ul>
 					</div>
@@ -73,6 +74,7 @@
 						    <li><a href="<?php echo base_url();?>contact-us"><span><?php echo html_escape($this->common->languageTranslator('ltr_contact_us')); ?></span></a></li>
 						    <li><a href="<?php echo base_url();?>privacy-policy"><span><?php echo html_escape($this->common->languageTranslator('ltr_privacy_policy')); ?></span></a></li>
 						    <li><a href="<?php echo base_url();?>term-condition"><span><?php echo html_escape($this->common->languageTranslator('ltr_terms_conditions')); ?></span></a></li>
+						    <li><a href="<?php echo base_url();?>refund-policy"><span><?php echo html_escape($this->common->languageTranslator('ltr_refund_policy')); ?></span></a></li>
 						</ul>
 					</div>
 				</div>
@@ -91,7 +93,7 @@
 										if(!empty($frontend_details[0]['address']))
 											echo '<a>'.$frontend_details[0]['address'].'</a>';
 										else
-											echo '<a>04 A, Agroha Nagar, Dewas, Madhya Pradesh 455001</a>';
+											echo '<a>MIRA ROAD, MUMBAI, MAHARASHTRA, INDIA</a>';
 										?>
 								</div>
 							</li>
@@ -102,7 +104,7 @@
 										if(!empty($frontend_details[0]['mobile']))
 											echo '<a href="tel:+'.$frontend_details[0]['mobile'].'">'.$frontend_details[0]['mobile'].'</a>';
 										else
-											echo '<a href="tel:+91 9999999999">+91 9999999999</a>';
+											echo '<a href="tel:+91 9833137409">+91 9833137409</a>';
 										?>
 								</div>
 							</li>
@@ -113,7 +115,7 @@
 										if(!empty($frontend_details[0]['email']))
 											echo '<a href="mailto:'.$frontend_details[0]['email'].'">'.$frontend_details[0]['email'].'</a>';
 										else
-											echo '<a href="mailto:example@email.com">example@email.com</a>';
+											echo '<a href="mailto:developer@manishtalreja.com">developer@manishtalreja.com</a>';
 										?>
 								</div>
 							</li>

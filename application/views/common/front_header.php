@@ -22,6 +22,12 @@
     
 	<!----- Favicon ----->
 	<link rel="shortcut icon" type="image/ico" href="<?php echo html_escape($this->common->siteFavicon); ?>" />
+      <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
+      <style>
+          body {
+              font-family: 'Poppins';
+          }
+      </style>
 	<?php 
     $colorsData =$this->common->theme_colors;
     $admin_themes = json_decode($colorsData[0]['admin_themes'],true);

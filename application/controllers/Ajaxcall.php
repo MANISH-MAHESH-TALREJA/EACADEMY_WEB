@@ -1904,536 +1904,619 @@ class Ajaxcall extends CI_Controller{
 //                 echo $this->lang->line('ltr_not_allowed_msg');
 //             } 
 //         }
-  function student_table(){
-            if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')){
-                $post = $this->input->post(NULL,TRUE);
-                $get = $this->input->get(NULL,TRUE);
-                if(isset($post['length']) && $post['length']>0){
-                    if(isset($post['start']) && !empty($post['start'])){
-                        $limit = array($post['length'],$post['start']);
-                        $count = $post['start']+1;
-                    }else{ 
-                        $limit = array($post['length'],0);
-                        $count = 1;
-                    }
-                }else{
-                    $limit = '';
+    function student_table()
+    {
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'))
+        {
+            $post = $this->input->post(NULL, TRUE);
+            $get = $this->input->get(NULL, TRUE);
+            if (isset($post['length']) && $post['length'] > 0)
+            {
+                if (!empty($post['start']))
+                {
+                    $limit = array($post['length'], $post['start']);
+                    $count = $post['start'] + 1;
+                }
+                else
+                {
+                    $limit = array($post['length'], 0);
                     $count = 1;
                 }
-            
-                if($post['search']['value'] != ''){
-                    $like = array('students.name',$post['search']['value']);
-                     $like1 = $post['search']['value'];
-                    $or_like = '';
-                }else{
-                    $like = ''; 
-                    $like1 = '';
-                    $or_like = ''; 
+            }
+            else
+            {
+                $limit = '';
+                $count = 1;
+            }
+
+            if ($post['search']['value'] != '')
+            {
+                $like = array('students.name', $post['search']['value']);
+                $like1 = $post['search']['value'];
+            }
+            else
+            {
+                $like = '';
+                $like1 = '';
+            }
+            $or_like = '';
+            if ($this->session->userdata('role') == 1)
+            {
+                $uid = $this->session->userdata('uid');
+                // $cond='';
+                // $cond = array('students.admin_id'=>$this->session->userdata('uid'));
+                // $cond['students.admin_id'] = $this->session->userdata('uid');
+                //   $cond1 = "`students`";
+                $cond1 = "`sudent_batchs`";
+                $cond2 = "`admin_id`";
+                $cond3 = $uid;
+                $cond = ($cond1 . '.' . $cond2 . '=' . $cond3);
+            }
+            else
+            {
+                $batch_ids = $this->session->userdata('batch_id');
+                $admin_id = $this->session->userdata('admin_id');
+                if (!empty($batch_ids))
+                {
+                    $cond1 = "`students`";
+                    $cond2 = "`admin_id`";
+                    $cond3 = "`sudent_batchs`";
+                    $cond4 = "`batch_id`";
+                    $cond5 = "`status`";
+
+                    $cond = ($cond3 . '.' . $cond4 . ' in (' . $batch_ids . ') AND ' . $cond1 . '.' . $cond5 . '= 1');
+                    // 		$cond = "students.admin_id = $admin_id AND sudent_batchs.batch_id in ($batch_ids) AND students.status = 1";
                 }
-                if($this->session->userdata('role')==1){
-                    $uid = $this->session->userdata('uid');
-                    // $cond='';
-                    // $cond = array('students.admin_id'=>$this->session->userdata('uid'));
-                    // $cond['students.admin_id'] = $this->session->userdata('uid');
-                    //   $cond1 = "`students`";
-                      $cond1 = "`sudent_batchs`";
-                      $cond2 = "`admin_id`";
-                      $cond3 = $uid;
-                   $cond = ($cond1.'.'.$cond2.'='.$cond3); 
-                }else{
-                    $batch_ids = $this->session->userdata('batch_id');
-                    $admin_id = $this->session->userdata('admin_id');
-            		if(!empty($batch_ids)){
-                		$cond1 = "`students`";
+                else
+                {
+                    $cond = '';
+                }
+            }
+
+            if (isset($get['user_status']) || isset($get['lgStatus']) || isset($get['user_batch']))
+            {
+                if ($get['user_status'] != '' && $get['lgStatus'] != '' && $get['user_batch'] != '')
+                {
+                    if ($this->session->userdata('role') == 1)
+                    {
+                        // $cond['status'] = $get['user_status'];
+                        // $cond['login_status'] = $get['lgStatus'];
+                        // $cond_in['batch_id'] = $get['user_batch'];
+                        $cond1 = "`students`";
                         $cond2 = "`admin_id`";
                         $cond3 = "`sudent_batchs`";
                         $cond4 = "`batch_id`";
                         $cond5 = "`status`";
-    
-                        $cond = ($cond3.'.'.$cond4.' in ('.$batch_ids.') AND '.$cond1.'.'.$cond5.'= 1'); 
-            // 		$cond = "students.admin_id = $admin_id AND sudent_batchs.batch_id in ($batch_ids) AND students.status = 1";
-            		}else{
-            			$cond = '';
-            		}
+                        $cond6 = "`login_status`";
+
+                        $cond .= ' AND ' . $cond1 . '.' . $cond5 . '=' . $get['user_status'];
+                        $cond .= ' AND ' . $cond1 . '.' . $cond6 . '=' . $get['lgStatus'];
+                        $cond_in = ' AND ' . $cond3 . '.' . $cond4 . '=' . $get['user_batch'];
+
+
+                        // $cond .= ' AND students.status='.$get['user_status'];
+                        // $cond .= ' AND students.login_status='.$get['lgStatus'];
+                        // $cond_in = ' AND sudent_batchs.batch_id='.$get['user_batch'];
+                    }
+                    else
+                    {
+                        $cond1 = "`students`";
+                        $cond2 = "`admin_id`";
+                        $cond3 = "`sudent_batchs`";
+                        $cond4 = "`batch_id`";
+                        $cond5 = "`status`";
+                        $cond6 = "`login_status`";
+
+                        $cond .= ' AND ' . $cond1 . '.' . $cond5 . '=' . $get['user_status'];
+                        $cond .= ' AND ' . $cond1 . '.' . $cond6 . '=' . $get['lgStatus'];
+                        $cond .= ' AND ' . $cond3 . '.' . $cond4 . '=' . $get['user_batch'];
+
+
+                        // $cond .= ' AND students.status='.$get['user_status'];
+                        // $cond .= ' AND students.login_status='.$get['lgStatus'];
+                        // $cond .= ' AND sudent_batchs.batch_id='.$get['user_batch'];
+                    }
+
                 }
-                
-                if(isset($get['user_status']) || isset($get['lgStatus']) || isset($get['user_batch'])){
-                    if($get['user_status']!='' && $get['lgStatus']!='' && $get['user_batch']!=''){
-                        if($this->session->userdata('role')==1){
-                            // $cond['status'] = $get['user_status'];   
-                            // $cond['login_status'] = $get['lgStatus'];   
-                            // $cond_in['batch_id'] = $get['user_batch'];
-                            $cond1 = "`students`";
-                            $cond2 = "`admin_id`";
-                            $cond3 = "`sudent_batchs`";
-                            $cond4 = "`batch_id`";
-                            $cond5 = "`status`";
-                            $cond6 = "`login_status`";
-    
-                            $cond .= ' AND '.$cond1.'.'.$cond5.'='.$get['user_status'];
-                            $cond .= ' AND '.$cond1.'.'.$cond6.'='.$get['lgStatus'];
-                            $cond_in = ' AND '.$cond3.'.'.$cond4.'='.$get['user_batch'];
-    
-                            
-                            // $cond .= ' AND students.status='.$get['user_status'];
-                            // $cond .= ' AND students.login_status='.$get['lgStatus'];
-                            // $cond_in = ' AND sudent_batchs.batch_id='.$get['user_batch'];
-                        }else{
-                            $cond1 = "`students`";
-                            $cond2 = "`admin_id`";
-                            $cond3 = "`sudent_batchs`";
-                            $cond4 = "`batch_id`";
-                            $cond5 = "`status`";
-                            $cond6 = "`login_status`";
-    
-                            $cond .= ' AND '.$cond1.'.'.$cond5.'='.$get['user_status'];
-                            $cond .= ' AND '.$cond1.'.'.$cond6.'='.$get['lgStatus'];
-                            $cond .= ' AND '.$cond3.'.'.$cond4.'='.$get['user_batch'];
-                            
-                            
-                            // $cond .= ' AND students.status='.$get['user_status'];
-                            // $cond .= ' AND students.login_status='.$get['lgStatus'];
-                            // $cond .= ' AND sudent_batchs.batch_id='.$get['user_batch'];
-                        }
-                          
-                    }else if($get['user_status']!='' && $get['lgStatus']!=''){
-                        if($this->session->userdata('role')==1){
-                            // $cond['status'] = $get['user_status'];   
-                            // $cond['login_status'] = $get['lgStatus'];
-                            $cond1 = "`students`";
-                            $cond2 = "`admin_id`";
-                            $cond3 = "`sudent_batchs`";
-                            $cond5 = "`status`";
-                            $cond6 = "`login_status`";
-    
-                            $cond .= ' AND '.$cond1.'.'.$cond5.'='.$get['user_status'];
-                            $cond .= ' AND '.$cond1.'.'.$cond6.'='.$get['lgStatus'];
-    
-                            //  $cond .= ' AND students.status='.$get['user_status'];
-                            // $cond .= ' AND students.login_status='.$get['lgStatus'];
-                        }else{
-                            $cond1 = "`students`";
-                            $cond2 = "`admin_id`";
-                            $cond3 = "`sudent_batchs`";
-                            $cond5 = "`status`";
-                            $cond6 = "`login_status`";
-    
-                            $cond .= ' AND '.$cond1.'.'.$cond5.'='.$get['user_status'];
-                            $cond .= ' AND '.$cond1.'.'.$cond6.'='.$get['lgStatus'];
-    
-                            // $cond .= ' AND students.status='.$get['user_status'];
-                            // $cond .= ' AND students.login_status='.$get['lgStatus'];
-                        }
-                    }else if($get['user_status']!='' && $get['user_batch']!=''){
-                        if($this->session->userdata('role')==1){
-                            // $cond['students.status'] = $get['user_status'];   
-                            // $cond_in['sudent_batchs.batch_id'] = $get['user_batch'];
-                            
-                            $cond1 = "`students`";
-                            $cond2 = "`admin_id`";
-                            $cond3 = "`sudent_batchs`";
-                            $cond4 = "`batch_id`";
-                            $cond5 = "`status`";
-                            $cond6 = "`login_status`";
-    
-                            $cond .= ' AND '.$cond1.'.'.$cond5.'='.$get['user_status'];
-                            $cond .= ' AND '.$cond1.'.'.$cond4.'='.$get['user_batch'];
-    
-                            // $cond .= ' AND students.status='.$get['user_status'];
-                            // $cond .= ' AND sudent_batchs.batch_id='.$get['user_batch'];
-                        }else{
-                            $cond1 = "`students`";
-                            $cond2 = "`admin_id`";
-                            $cond3 = "`sudent_batchs`";
-                            $cond4 = "`batch_id`";
-                            $cond5 = "`status`";
-                            $cond6 = "`login_status`";
-    
-                            $cond .= ' AND '.$cond1.'.'.$cond5.'='.$get['user_status'];
-                            $cond .= ' AND '.$cond1.'.'.$cond4.'='.$get['user_batch'];
-                            
-                            // $cond .= ' AND students.status='.$get['user_status'];
-                            // $cond .= ' AND sudent_batchs.batch_id='.$get['user_batch'];
-                        }
-                    }else if($get['lgStatus']!='' && $get['user_batch']!=''){
-                        if($this->session->userdata('role')==1){
-                            // $cond['login_status'] = $get['lgStatus'];  
-                            // $cond_in['batch_id'] = $get['user_batch'];
-                            
-                            $cond1 = "`students`";
-                            $cond2 = "`admin_id`";
-                            $cond3 = "`sudent_batchs`";
-                            $cond4 = "`batch_id`";
-                            $cond5 = "`status`";
-                            $cond6 = "`login_status`";
-    
-                            $cond .= ' AND '.$cond1.'.'.$cond6.'='.$get['lgStatus'];
-                            $cond .= ' AND '.$cond1.'.'.$cond4.'='.$get['user_batch'];
-                            
-                            // $cond .= ' AND students.login_status='.$get['lgStatus'];
-                            // $cond_in .= ' AND sudent_batchs.batch_id='.$get['user_batch'];
-                        }else{
-                            
-                            $cond1 = "`students`";
-                            $cond2 = "`admin_id`";
-                            $cond3 = "`sudent_batchs`";
-                            $cond4 = "`batch_id`";
-                            $cond5 = "`status`";
-                            $cond6 = "`login_status`";
-    
-                            $cond .= ' AND '.$cond1.'.'.$cond6.'='.$get['lgStatus'];
-                            $cond .= ' AND '.$cond1.'.'.$cond4.'='.$get['user_batch'];
-                            
-                            
-                            // $cond .= ' AND students.login_status='.$get['lgStatus'];
-                            // $cond .= ' AND sudent_batchs.batch_id='.$get['user_batch'];
-                        }
-                    }else if($get['user_status']!='' ){
-                        if($this->session->userdata('role')==1){
-                            // $cond['students.status'] = $get['user_status'];
-                            
-                            $cond1 = "`students`";
-                            $cond5 = "`status`";
-    
-                            $cond .= ' AND '.$cond1.'.'.$cond5.'='.$get['user_status'];
-                            
-                            // $cond .= ' AND students.status='.$get['user_status'];
-    
-                        }else{
-                            $cond1 = "`students`";
-                            $cond5 = "`status`";
-    
-                            $cond .= ' AND '.$cond1.'.'.$cond5.'='.$get['user_status'];
-                            
-                            // $cond .= ' AND students.status='.$get['user_status'];
-                             
-                        }
-                    }else if($get['lgStatus']!=''){
-                        if($this->session->userdata('role')==1){
-                            // $cond['login_status'] = $get['lgStatus'];
-                            $cond1 = "`students`";
-                            $cond5 = "`login_status`";
-    
-                            $cond .= ' AND '.$cond1.'.'.$cond5.'='.$get['lgStatus'];
-                            // $cond .= ' AND students.login_status='.$get['lgStatus'];
-    
-                        }else{
-                            $cond1 = "`students`";
-                            $cond5 = "`login_status`";
-    
-                            $cond .= ' AND '.$cond1.'.'.$cond5.'='.$get['lgStatus'];
-                            // $cond .= ' AND students.login_status='.$get['lgStatus'];
-                        }
-                    }else if($get['user_batch']!=''){
-                        if($this->session->userdata('role')==1){
-                            // $cond_in['batch_id'] = $get['user_batch'];
-                            
-                            $cond3 = "`sudent_batchs`";
-                            $cond4 = "`batch_id`";
-                            $cond .= ' AND '.$cond3.'.'.$cond4.'='.$get['user_batch'];
-                            // $cond .= ' AND sudent_batchs.batch_id='.$get['user_batch'];
-     
-                        }else{
-                              $cond3 = "`sudent_batchs`";
-                              $cond4 = "`batch_id`";
-                              $cond .= ' AND '.$cond3.'.'.$cond4.'='.$get['user_batch'];
-                            // $cond .= ' AND sudent_batchs.batch_id='.$get['user_batch'];
-                        }
+                else if ($get['user_status'] != '' && $get['lgStatus'] != '')
+                {
+                    if ($this->session->userdata('role') == 1)
+                    {
+                        // $cond['status'] = $get['user_status'];
+                        // $cond['login_status'] = $get['lgStatus'];
+                        $cond1 = "`students`";
+                        $cond2 = "`admin_id`";
+                        $cond3 = "`sudent_batchs`";
+                        $cond5 = "`status`";
+                        $cond6 = "`login_status`";
+
+                        $cond .= ' AND ' . $cond1 . '.' . $cond5 . '=' . $get['user_status'];
+                        $cond .= ' AND ' . $cond1 . '.' . $cond6 . '=' . $get['lgStatus'];
+
+                        //  $cond .= ' AND students.status='.$get['user_status'];
+                        // $cond .= ' AND students.login_status='.$get['lgStatus'];
+                    }
+                    else
+                    {
+                        $cond1 = "`students`";
+                        $cond2 = "`admin_id`";
+                        $cond3 = "`sudent_batchs`";
+                        $cond5 = "`status`";
+                        $cond6 = "`login_status`";
+
+                        $cond .= ' AND ' . $cond1 . '.' . $cond5 . '=' . $get['user_status'];
+                        $cond .= ' AND ' . $cond1 . '.' . $cond6 . '=' . $get['lgStatus'];
+
+                        // $cond .= ' AND students.status='.$get['user_status'];
+                        // $cond .= ' AND students.login_status='.$get['lgStatus'];
                     }
                 }
-                
-                if(!empty($cond_in['batch_id'])){
-                    $where_in=array('sudent_batchs.batch_id',$cond_in['batch_id']); 
-                }else{
-                    $where_in="";
+                else if ($get['user_status'] != '' && $get['user_batch'] != '')
+                {
+                    if ($this->session->userdata('role') == 1)
+                    {
+                        // $cond['students.status'] = $get['user_status'];
+                        // $cond_in['sudent_batchs.batch_id'] = $get['user_batch'];
+
+                        $cond1 = "`students`";
+                        $cond2 = "`admin_id`";
+                        $cond3 = "`sudent_batchs`";
+                        $cond4 = "`batch_id`";
+                        $cond5 = "`status`";
+                        $cond6 = "`login_status`";
+
+                        $cond .= ' AND ' . $cond1 . '.' . $cond5 . '=' . $get['user_status'];
+                        $cond .= ' AND ' . $cond1 . '.' . $cond4 . '=' . $get['user_batch'];
+
+                        // $cond .= ' AND students.status='.$get['user_status'];
+                        // $cond .= ' AND sudent_batchs.batch_id='.$get['user_batch'];
+                    }
+                    else
+                    {
+                        $cond1 = "`students`";
+                        $cond2 = "`admin_id`";
+                        $cond3 = "`sudent_batchs`";
+                        $cond4 = "`batch_id`";
+                        $cond5 = "`status`";
+                        $cond6 = "`login_status`";
+
+                        $cond .= ' AND ' . $cond1 . '.' . $cond5 . '=' . $get['user_status'];
+                        $cond .= ' AND ' . $cond1 . '.' . $cond4 . '=' . $get['user_batch'];
+
+                        // $cond .= ' AND students.status='.$get['user_status'];
+                        // $cond .= ' AND sudent_batchs.batch_id='.$get['user_batch'];
+                    }
                 }
+                else if ($get['lgStatus'] != '' && $get['user_batch'] != '')
+                {
+                    if ($this->session->userdata('role') == 1)
+                    {
+                        // $cond['login_status'] = $get['lgStatus'];
+                        // $cond_in['batch_id'] = $get['user_batch'];
+
+                        $cond1 = "`students`";
+                        $cond2 = "`admin_id`";
+                        $cond3 = "`sudent_batchs`";
+                        $cond4 = "`batch_id`";
+                        $cond5 = "`status`";
+                        $cond6 = "`login_status`";
+
+                        $cond .= ' AND ' . $cond1 . '.' . $cond6 . '=' . $get['lgStatus'];
+                        $cond .= ' AND ' . $cond1 . '.' . $cond4 . '=' . $get['user_batch'];
+
+                        // $cond .= ' AND students.login_status='.$get['lgStatus'];
+                        // $cond_in .= ' AND sudent_batchs.batch_id='.$get['user_batch'];
+                    }
+                    else
+                    {
+
+                        $cond1 = "`students`";
+                        $cond2 = "`admin_id`";
+                        $cond3 = "`sudent_batchs`";
+                        $cond4 = "`batch_id`";
+                        $cond5 = "`status`";
+                        $cond6 = "`login_status`";
+
+                        $cond .= ' AND ' . $cond1 . '.' . $cond6 . '=' . $get['lgStatus'];
+                        $cond .= ' AND ' . $cond1 . '.' . $cond4 . '=' . $get['user_batch'];
 
 
-                $student_dat = $this->db_model->select_data('sudent_batchs.*,students.id as s_id,students.status,students.admission_date,students.name,students.email,students.contact_no,students.enrollment_id','sudent_batchs',$cond,$limit,array('students.id','asc'),$like,array('students','students.id=sudent_batchs.student_id','left'),'sudent_batchs.id',$or_like,$where_in);
+                        // $cond .= ' AND students.login_status='.$get['lgStatus'];
+                        // $cond .= ' AND sudent_batchs.batch_id='.$get['user_batch'];
+                    }
+                }
+                else if ($get['user_status'] != '')
+                {
+                    if ($this->session->userdata('role') == 1)
+                    {
+                        // $cond['students.status'] = $get['user_status'];
+
+                        $cond1 = "`students`";
+                        $cond5 = "`status`";
+
+                        $cond .= ' AND ' . $cond1 . '.' . $cond5 . '=' . $get['user_status'];
+
+                        // $cond .= ' AND students.status='.$get['user_status'];
+
+                    }
+                    else
+                    {
+                        $cond1 = "`students`";
+                        $cond5 = "`status`";
+
+                        $cond .= ' AND ' . $cond1 . '.' . $cond5 . '=' . $get['user_status'];
+
+                        // $cond .= ' AND students.status='.$get['user_status'];
+
+                    }
+                }
+                else if ($get['lgStatus'] != '')
+                {
+                    if ($this->session->userdata('role') == 1)
+                    {
+                        // $cond['login_status'] = $get['lgStatus'];
+                        $cond1 = "`students`";
+                        $cond5 = "`login_status`";
+
+                        $cond .= ' AND ' . $cond1 . '.' . $cond5 . '=' . $get['lgStatus'];
+                        // $cond .= ' AND students.login_status='.$get['lgStatus'];
+
+                    }
+                    else
+                    {
+                        $cond1 = "`students`";
+                        $cond5 = "`login_status`";
+
+                        $cond .= ' AND ' . $cond1 . '.' . $cond5 . '=' . $get['lgStatus'];
+                        // $cond .= ' AND students.login_status='.$get['lgStatus'];
+                    }
+                }
+                else if ($get['user_batch'] != '')
+                {
+                    if ($this->session->userdata('role') == 1)
+                    {
+                        // $cond_in['batch_id'] = $get['user_batch'];
+
+                        $cond3 = "`sudent_batchs`";
+                        $cond4 = "`batch_id`";
+                        $cond .= ' AND ' . $cond3 . '.' . $cond4 . '=' . $get['user_batch'];
+                        // $cond .= ' AND sudent_batchs.batch_id='.$get['user_batch'];
+
+                    }
+                    else
+                    {
+                        $cond3 = "`sudent_batchs`";
+                        $cond4 = "`batch_id`";
+                        $cond .= ' AND ' . $cond3 . '.' . $cond4 . '=' . $get['user_batch'];
+                        // $cond .= ' AND sudent_batchs.batch_id='.$get['user_batch'];
+                    }
+                }
+            }
+
+            if (!empty($cond_in['batch_id']))
+            {
+                $where_in = array('sudent_batchs.batch_id', $cond_in['batch_id']);
+            }
+            else
+            {
+                $where_in = "";
+            }
+
+
+            $student_dat = $this->db_model->select_data('sudent_batchs.*,students.id as s_id,students.status,students.admission_date,students.name,students.email,students.contact_no,students.enrollment_id', 'sudent_batchs', $cond, $limit, array('students.id', 'asc'), $like, array('students', 'students.id=sudent_batchs.student_id', 'left'), 'sudent_batchs.id', $or_like, $where_in);
             //   echo $this->db->last_query();die;
-                $new = [];
-                foreach($student_dat as $row) {
-                    $title = $row['s_id'];
-                    if(!array_key_exists($title, $new)) {
-                        $new[$title] = $row;
-                    }
-                    
+            $new = [];
+            foreach ($student_dat as $row)
+            {
+                $title = $row['s_id'];
+                if (!array_key_exists($title, $new))
+                {
+                    $new[$title] = $row;
                 }
-                // $student_data = $this->db_model->select_data('students.*','students use index (id)',$cond,$limit,array('students.id','desc'),$like,array('sudent_batchs','sudent_batchs.student_id=students.id','left'),'students.id',$or_like,$where_in);
-                // print_r($student_data);
-                // echo $this->db->last_query();
-    
-                if(($this->session->userdata('role')==3) && empty($this->session->userdata('batch_id'))){
-                    $student_data = "";
+
+            }
+            // $student_data = $this->db_model->select_data('students.*','students use index (id)',$cond,$limit,array('students.id','desc'),$like,array('sudent_batchs','sudent_batchs.student_id=students.id','left'),'students.id',$or_like,$where_in);
+            // print_r($student_data);
+            // echo $this->db->last_query();
+
+            if (($this->session->userdata('role') == 3) && empty($this->session->userdata('batch_id')))
+            {
+                $student_data = "";
+            }
+            if (!empty($student_dat))
+            {
+                $role = $this->session->userdata('role');
+                if ($role == '1')
+                {
+                    $profile = 'admin';
                 }
-                if(!empty($student_dat)){
-                    $role = $this->session->userdata('role');
-                    if($role == '1'){  
-                        $profile = 'admin';
-                    }else if($role == '3'){
-                        $profile = 'teacher';
+                else if ($role == '3')
+                {
+                    $profile = 'teacher';
+                }
+                $batch_array = $this->db_model->select_data('id,batch_name', 'batches use index (id)', array('id' => $student_data[0]['batch_id']));
+
+                foreach ($new as $student)
+                {
+
+                    if (!empty($student['image']))
+                    {
+                        $image = '<img src="' . base_url() . 'uploads/students/' . $student['image'] . '" title="' . $student['name'] . '" class="view_large_image"></a>';
                     }
-                    $batch_array = $this->db_model->select_data('id,batch_name','batches use index (id)',array('id'=>$student_data[0]['batch_id']));
-      
-                    foreach($new as $student){
-                       
-                        if (!empty($student['image'])){ 
-                            $image = '<img src="'.base_url().'uploads/students/'.$student['image'].'" title="'.$student['name'].'" class="view_large_image"></a>';
-                        }else{
-                            $image = '<img src="'.base_url().'assets/images/student_img.png" title="'.$student['name'].'" class="view_large_image"></a>';
-                        }
-        
-                        foreach($new as $studentData){
-                        $join = array('batches',"batches.id = sudent_batchs.batch_id");
-                          $student_batch = $this->db_model->select_data('sudent_batchs.student_id,sudent_batchs.batch_id,batches.batch_name','sudent_batchs',array('student_id'=>$student['s_id']),'','','',$join,'batches.id');
+                    else
+                    {
+                        $image = '<img src="' . base_url() . 'assets/images/student_img.png" title="' . $student['name'] . '" class="view_large_image"></a>';
+                    }
+
+                    foreach ($new as $ignored)
+                    {
+                        $join = array('batches', "batches.id = sudent_batchs.batch_id");
+                        $student_batch = $this->db_model->select_data('sudent_batchs.student_id,sudent_batchs.batch_id,batches.batch_name', 'sudent_batchs', array('student_id' => $student['s_id']), '', '', '', $join, 'batches.id');
                         // print_r($student_batch);
-                        }
-    
-                          $batch_name="";
-                         
-                          foreach($student_batch as $batch){
-                            $batch_name .= $batch['batch_name'].', ';
-                        
-                          }
-                         if(!empty($student_batch)){
-                            $batchData = rtrim($batch_name,", ");
-                          }else{
-                              $batch_name = "<h6>No Batch Purchased</h6>";
-                             $batchData = $batch_name;
-                          }  
-                        if($student['status'] == 1){
-                            $statusDrop = '<div class="admin_tbl_status_wrap"><a class="tbl_status_btn light_sky_bg changeStatusButton" data-id="'.$student['s_id'].'" data-table ="students" data-status ="0" href="javascript:;">'.$this->lang->line('ltr_active').'</a></div>';
-                        }else{
-                            $statusDrop = '<div class="admin_tbl_status_wrap">
-                        <a class="tbl_status_btn light_red_bg changeStatusButton" data-id="'.$student['s_id'].'" data-table ="students" data-status ="1" href="javascript:;">'.$this->lang->line('ltr_inactive').'</a></div>';
-                        }
-                        
-                        if($student['payment_status']==1){
-    						  $payment_status=$this->lang->line('ltr_paid'); 
-    					   }else{
-    						  $payment_status=$this->lang->line('ltr_unpaid'); 
-    					   }
-                        if($role == '1'){
-                           						
-                           
-                                $action = '<div class="actions_wrap_dot">
+                    }
+
+                    $batch_name = "";
+
+                    foreach ($student_batch as $batch)
+                    {
+                        $batch_name .= $batch['batch_name'] . ', ';
+
+                    }
+                    if (!empty($student_batch))
+                    {
+                        $batchData = rtrim($batch_name, ", ");
+                    }
+                    else
+                    {
+                        $batch_name = "<h6>No Batch Purchased</h6>";
+                        $batchData = $batch_name;
+                    }
+                    if ($student['status'] == 1)
+                    {
+                        $statusDrop = '<div class="admin_tbl_status_wrap"><a class="tbl_status_btn light_sky_bg changeStatusButton" data-id="' . $student['s_id'] . '" data-table ="students" data-status ="0" href="javascript:;">' . $this->lang->line('ltr_active') . '</a></div>';
+                    }
+                    else
+                    {
+                        $statusDrop = '<div class="admin_tbl_status_wrap">
+                        <a class="tbl_status_btn light_red_bg changeStatusButton" data-id="' . $student['s_id'] . '" data-table ="students" data-status ="1" href="javascript:;">' . $this->lang->line('ltr_inactive') . '</a></div>';
+                    }
+
+                    if ($student['payment_status'] == 1)
+                    {
+                        $payment_status = $this->lang->line('ltr_paid');
+                    }
+                    else
+                    {
+                        $payment_status = $this->lang->line('ltr_unpaid');
+                    }
+                    if ($role == '1')
+                    {
+
+                        $action = '<div class="actions_wrap_dot">
                             <span class="tbl_action_drop" >
                                 <svg xmlns="https://www.w3.org/2000/svg" width="15px" height="4px">
                 				<path fill-rule="evenodd" fill="rgb(77 74 129)" d="M13.031,4.000 C11.944,4.000 11.062,3.104 11.062,2.000 C11.062,0.895 11.944,-0.000 13.031,-0.000 C14.119,-0.000 15.000,0.895 15.000,2.000 C15.000,3.104 14.119,4.000 13.031,4.000 ZM7.500,4.000 C6.413,4.000 5.531,3.104 5.531,2.000 C5.531,0.895 6.413,-0.000 7.500,-0.000 C8.587,-0.000 9.469,0.895 9.469,2.000 C9.469,3.104 8.587,4.000 7.500,4.000 ZM1.969,4.000 C0.881,4.000 -0.000,3.104 -0.000,2.000 C-0.000,0.895 0.881,-0.000 1.969,-0.000 C3.056,-0.000 3.937,0.895 3.937,2.000 C3.937,3.104 3.056,4.000 1.969,4.000 Z"></path>
                 				</svg>
                 				<ul class="tbl_action_ul">
                 				    <li>
-                				        <a href="'.base_url('admin/student-attendance/').$student['s_id'].'">
+                				        <a href="' . base_url('admin/student-attendance/') . $student['s_id'] . '">
                 				            <span class="action_drop_icon">
                 				                <i class="icofont-check-circled"></i>
                 				            </span>
-                				            '.$this->lang->line('ltr_attendance').'
+                				            ' . $this->lang->line('ltr_attendance') . '
                 				        </a>
                 				    </li>
                 				    <li>
-                                    <a href="'.base_url('admin/student-manage-certificate/').$student['s_id'].'">
+                                    <a href="' . base_url('admin/student-manage-certificate/') . $student['s_id'] . '">
                                         <span class="action_drop_icon">
                                             <i class="icofont-badge"></i>
                                         </span>
-                                        '.$this->lang->line('ltr_manage_certificate').'
+                                        ' . $this->lang->line('ltr_manage_certificate') . '
                                     </a>
                                 </li>
                 				    <li>
-                				        <a href="'.base_url('admin/student-attendance-extra-class/').$student['s_id'].'">
+                				        <a href="' . base_url('admin/student-attendance-extra-class/') . $student['s_id'] . '">
                 				            <span class="action_drop_icon">
                 				                <i class="icofont-tasks-alt"></i>
                 				            </span>
-                				            '.$this->lang->line('ltr_extra_class_attendance').'
+                				            ' . $this->lang->line('ltr_extra_class_attendance') . '
                 				        </a>
                 				    </li>
                 				    <li>
-                				        <a href="'.base_url('admin/student-progress/').$student['s_id'].'">
+                				        <a href="' . base_url('admin/student-progress/') . $student['s_id'] . '">
                 				            <span class="action_drop_icon">
                 				                <i class="icofont-paper"></i>
                 				            </span>
-                				             '.$this->lang->line('ltr_progress').'
+                				             ' . $this->lang->line('ltr_progress') . '
                 				        </a>
                 				    </li>
                 				    <li>
-                				        <a href="'.base_url('admin/student-academic-record/').$student['s_id'].'">
+                				        <a href="' . base_url('admin/student-academic-record/') . $student['s_id'] . '">
                 				            <span class="action_drop_icon">
                 				                <i class="icofont-bars"></i>
-                				            </span>'.$this->lang->line('ltr_academic_record').'
+                				            </span>' . $this->lang->line('ltr_academic_record') . '
                 				        </a>
                 				    </li>
                 				    <li>
-                				        <a href="'.base_url().$profile.'/student-notice/'.$student['s_id'].'">
+                				        <a href="' . base_url() . $profile . '/student-notice/' . $student['s_id'] . '">
                 				            <span class="action_drop_icon">
                 				                <i class="fas fa-bell"></i>
                 				            </span>
-                				            '.$this->lang->line('ltr_notice').'
+                				            ' . $this->lang->line('ltr_notice') . '
                 				        </a>
                 				    </li>
 									<li>
-                				        <a href="'.base_url().$profile.'/doubts-ask/'.$student['s_id'].'">
+                				        <a href="' . base_url() . $profile . '/doubts-ask/' . $student['s_id'] . '">
                 				            <span class="action_drop_icon">
                 				                <i class="icofont-speech-comments"></i>
                 				            </span>
-                				            '.$this->lang->line('ltr_doubts_ask').' 
+                				            ' . $this->lang->line('ltr_doubts_ask') . ' 
                 				        </a>
                 				    </li>
                 				    <li>
-                				        <a href="'.base_url().$profile.'/add-student/'.$student['s_id'].'">
+                				        <a href="' . base_url() . $profile . '/add-student/' . $student['s_id'] . '">
                 				            <span class="action_drop_icon">
                 				                <i class="fa fa-edit"></i>
                 				            </span>
-                				            '.$this->lang->line('ltr_edit').'
+                				            ' . $this->lang->line('ltr_edit') . '
                 				        </a>
                 				    </li>
                 				    <li>
-                				        <a href="javascript:void(0);" class="deleteData" title="Delete" data-id="'.$student['s_id'].'" data-table="students">
+                				        <a href="javascript:void(0);" class="deleteData" title="Delete" data-id="' . $student['s_id'] . '" data-table="students">
                 				            <span class="action_drop_icon">
                 				                <i class="fa fa-trash"></i>
                 				            </span>
-                				            '.$this->lang->line('ltr_delete').'
+                				            ' . $this->lang->line('ltr_delete') . '
                 				        </a>
                 				    </li>
                 				    <li>
-                				        <a href="javascript:void(0);" class="changePassModal" data-id="'.$student['s_id'].'">
+                				        <a href="javascript:void(0);" class="changePassModal" data-id="' . $student['s_id'] . '">
                 				            <span class="action_drop_icon">
                 				                <i class="icofont-gear"></i>
                 				            </span>
-                				            '.$this->lang->line('ltr_change_password').'
+                				            ' . $this->lang->line('ltr_change_password') . '
                 				        </a>
-                				    </li>'.
-                		 
-								/*	<li>
-                				        <a href="javascript:void(0);" class="paymentStatus" data-id="'.$student['id'].'">
-                				            <span class="action_drop_icon">
-                				              <i class="icofont-mail"></i>
-                				            </span>
-                				            '.$payment_status.'
-                				        </a>
-                				    </li>*/
-                		  
-                				'</ul>
+                				    </li>' .
+
+                            /*	<li>
+                                    <a href="javascript:void(0);" class="paymentStatus" data-id="'.$student['id'].'">
+                                        <span class="action_drop_icon">
+                                          <i class="icofont-mail"></i>
+                                        </span>
+                                        '.$payment_status.'
+                                    </a>
+                                </li>*/
+
+                            '</ul>
                             </span>
                          </div>';
-    						 $user_name =$this->readMoreWord($student['name'], 'Student Name',15);
-    						
-                            $dataarray[] = array(
-                                    '<input type="checkbox" class="checkOneRow" value="'.$student['s_id'].'">',
-                                    $count,
-                                    $image.$user_name,
-                                    '<p class="email">'.$student['email'].'</p>',
-                                    $student['contact_no'],
-                                    $student['enrollment_id'],
-                                    $batchData,
-                                    date('d-m-Y',strtotime($student['admission_date'])),
-                                    $statusDrop,
-                                    $action
-                            ); 
-                        }else if($role == '3'){
-                            $action = '<div class="actions_wrap_dot">
+                        $user_name = $this->readMoreWord($student['name'], 'Student Name', 15);
+
+                        $dataarray[] = array(
+                            '<input type="checkbox" class="checkOneRow" value="' . $student['s_id'] . '">',
+                            $count,
+                            $image . $user_name,
+                            '<p class="email">' . $student['email'] . '</p>',
+                            $student['contact_no'],
+                            $student['enrollment_id'],
+                            $batchData,
+                            date('d-m-Y', strtotime($student['admission_date'])),
+                            $statusDrop,
+                            $action
+                        );
+                    }
+                    else if ($role == '3')
+                    {
+                        $action = '<div class="actions_wrap_dot">
                             <span class="tbl_action_drop" >
                                 <svg xmlns="https://www.w3.org/2000/svg" width="15px" height="4px">
                 				<path fill-rule="evenodd" fill="rgb(77 74 129)" d="M13.031,4.000 C11.944,4.000 11.062,3.104 11.062,2.000 C11.062,0.895 11.944,-0.000 13.031,-0.000 C14.119,-0.000 15.000,0.895 15.000,2.000 C15.000,3.104 14.119,4.000 13.031,4.000 ZM7.500,4.000 C6.413,4.000 5.531,3.104 5.531,2.000 C5.531,0.895 6.413,-0.000 7.500,-0.000 C8.587,-0.000 9.469,0.895 9.469,2.000 C9.469,3.104 8.587,4.000 7.500,4.000 ZM1.969,4.000 C0.881,4.000 -0.000,3.104 -0.000,2.000 C-0.000,0.895 0.881,-0.000 1.969,-0.000 C3.056,-0.000 3.937,0.895 3.937,2.000 C3.937,3.104 3.056,4.000 1.969,4.000 Z"></path>
                 				</svg>
                 				<ul class="tbl_action_ul">
                 				    <li>
-                				        <a data-toggle="tooltip" data-placement="top" title="Attendance" href="'.base_url('teacher/student-attendance/').$student['s_id'].'">
+                				        <a data-toggle="tooltip" data-placement="top" title="Attendance" href="' . base_url('teacher/student-attendance/') . $student['s_id'] . '">
                 				            <span class="action_drop_icon">
                 				                <i class="icofont-check-circled"></i>
                 				            </span>
-                				            '.$this->lang->line('ltr_attendance').'
+                				            ' . $this->lang->line('ltr_attendance') . '
                 				        </a>
                 				    </li>
                 				    <li>
-                				        <a data-toggle="tooltip" data-placement="top" title="Extra Class Attendance" href="'.base_url('teacher/student-attendance-extra-class/').$student['s_id'].'">
+                				        <a data-toggle="tooltip" data-placement="top" title="Extra Class Attendance" href="' . base_url('teacher/student-attendance-extra-class/') . $student['s_id'] . '">
                 				            <span class="action_drop_icon">
                 				                <i class="icofont-tasks-alt"></i>
                 				            </span>
-                				            '.$this->lang->line('ltr_extra_class_attendance').'
+                				            ' . $this->lang->line('ltr_extra_class_attendance') . '
                 				        </a>
                 				    </li>
                 				    <li>
-                				        <a href="'.base_url('teacher/student-progress/').$student['s_id'].'">
+                				        <a href="' . base_url('teacher/student-progress/') . $student['s_id'] . '">
                 				            <span class="action_drop_icon">
                 				                <i class="icofont-paper"></i>
                 				            </span>
-                				             '.$this->lang->line('ltr_progress').'
+                				             ' . $this->lang->line('ltr_progress') . '
                 				        </a>
                 				    </li>
                 				    <li>
-                				         <a  href="'.base_url('teacher/student-academic-record/').$student['s_id'].'">
+                				         <a  href="' . base_url('teacher/student-academic-record/') . $student['s_id'] . '">
                 				                <i class="icofont-bars"></i>
-                				            </span>'.$this->lang->line('ltr_academic_record').'
+                				            </span>' . $this->lang->line('ltr_academic_record') . '
                 				        </a>
                 				    </li>
                 				    <li>
-                				         <a href="'.base_url().$profile.'/student-notice/'.$student['s_id'].'">
+                				         <a href="' . base_url() . $profile . '/student-notice/' . $student['s_id'] . '">
                 				            <span class="action_drop_icon">
                 				                <i class="fas fa-bell"></i>
                 				            </span>
-                				            '.$this->lang->line('ltr_notice').'
+                				            ' . $this->lang->line('ltr_notice') . '
                 				        </a>
                 				    </li>
 									<li>
-                				        <a href="'.base_url().$profile.'/doubts-ask/'.$student['s_id'].'">
+                				        <a href="' . base_url() . $profile . '/doubts-ask/' . $student['s_id'] . '">
                 				            <span class="action_drop_icon">
                 				                <i class="icofont-speech-comments"></i>
                 				            </span>
-                				           '.$this->lang->line('ltr_doubts_ask').'
+                				           ' . $this->lang->line('ltr_doubts_ask') . '
                 				        </a>
                 				    </li>
                 				    <li>
-                				        <a href="javascript:void(0);" class="changePassModal" data-id="'.$student['s_id'].'">
+                				        <a href="javascript:void(0);" class="changePassModal" data-id="' . $student['s_id'] . '">
                 				            <span class="action_drop_icon">
                 				                <i class="icofont-gear"></i>
                 				            </span>
-                				            '.$this->lang->line('ltr_change_password').'
+                				            ' . $this->lang->line('ltr_change_password') . '
                 				        </a>
                 				    </li>
                 				</ul>
                             </span>
                          </div>';
-    						 $user_name =$this->readMoreWord($student['name'], 'Student Name',15);
-                           
-                            $dataarray[] = array(
-                                '<input type="checkbox" class="checkOneRow" value="'.$student['s_id'].'">',
-                                    $count,
-                                    $image.$user_name,
-                                    '<p class="email">'.$student['email'].'</p>',
-                                    $student['contact_no'],
-                                    $student['enrollment_id'],
-                                    $batchData,
-                                    date('d-m-Y',strtotime($student['admission_date'])),
-                                    $action
-                            ); 
-                        }
-                        
-                        $count++;
+                        $user_name = $this->readMoreWord($student['name'], 'Student Name', 15);
+
+                        $dataarray[] = array(
+                            '<input type="checkbox" class="checkOneRow" value="' . $student['s_id'] . '">',
+                            $count,
+                            $image . $user_name,
+                            '<p class="email">' . $student['email'] . '</p>',
+                            $student['contact_no'],
+                            $student['enrollment_id'],
+                            $batchData,
+                            date('d-m-Y', strtotime($student['admission_date'])),
+                            $action
+                        );
                     }
-                    
-                  $table = 'sudent_batchs';
-                //   $recordsTotal = $this->db_model->countAll('students use index (id)',array('admin_id'=>$_SESSION['uid']),'','',$like,'','',$or_like,$where_in);
-                    $recordsTotal = $this->db_model->custom_slect_query("COUNT(id) AS `numrows`
-                    FROM (SELECT `sudent_batchs`.`id` FROM $table LEFT JOIN `students` ON `students`.`id`=`sudent_batchs`.`student_id` WHERE $cond $where_in GROUP BY `students`.`id`) sada")[0]['numrows'];
-                    
-                    $output = array(
-                        "draw" => $post['draw'],
-                        "recordsTotal" => $recordsTotal,
-                        "recordsFiltered" => $recordsTotal,
-                        "data" => $dataarray,
-                    );
-                }else{
-                    $output = array(
-                        "draw" => $post['draw'],
-                        "recordsTotal" => 0,
-                        "recordsFiltered" => 0,
-                        "data" => array(),
-                    );
+
+                    $count++;
                 }
-                echo json_encode($output,JSON_UNESCAPED_SLASHES);
-            }else{
-                echo $this->lang->line('ltr_not_allowed_msg');
-            } 
+
+                $table = 'sudent_batchs';
+                //   $recordsTotal = $this->db_model->countAll('students use index (id)',array('admin_id'=>$_SESSION['uid']),'','',$like,'','',$or_like,$where_in);
+                $recordsTotal = $this->db_model->custom_slect_query("COUNT(id) AS `numrows`
+                    FROM (SELECT `sudent_batchs`.`id` FROM $table LEFT JOIN `students` ON `students`.`id`=`sudent_batchs`.`student_id` WHERE $cond $where_in GROUP BY `students`.`id`) sada")[0]['numrows'];
+
+                $output = array(
+                    "draw" => $post['draw'],
+                    "recordsTotal" => $recordsTotal,
+                    "recordsFiltered" => $recordsTotal,
+                    "data" => $dataarray,
+                );
+            }
+            else
+            {
+                $output = array(
+                    "draw" => $post['draw'],
+                    "recordsTotal" => 0,
+                    "recordsFiltered" => 0,
+                    "data" => array(),
+                );
+            }
+            echo json_encode($output, JSON_UNESCAPED_SLASHES);
         }
+        else
+        {
+            echo $this->lang->line('ltr_not_allowed_msg');
+        }
+    }
+
     function student_Details(){
         if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')){
             $post = $this->input->post(NULL,TRUE);
@@ -9254,58 +9337,126 @@ function result_table($type){
             echo $this->lang->line('ltr_not_allowed_msg');
         } 
     }
-    
-    function updatePrivacyPolicy(){
-        if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')){
-            if(!empty($this->input->post('description',false))){
+
+    function update_privacy_policy()
+    {
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'))
+        {
+            if (!empty($this->input->post('privacy', false)))
+            {
                 $data_arr = html_escape($this->input->post(NULL, false));
                 $description['description'] = $data_arr['privacy'];
                 $data_arr1 = $this->security->xss_clean($description);
-               $privacy_data = $this->db_model->select_data('*','privacy_policy_data',array('id'=>'1'),1);
-               if(!empty($privacy_data)){
-                $ins = $this->db_model->update_data_limit('privacy_policy_data',$data_arr1,array('id'=>1),1);
-               }
-               else{
-                    $ins = $this->db_model->insert_data('privacy_policy_data',$data_arr1);
-               }
-                //echo $this->db->last_query();
-                if($ins){
-                    $resp = array('status'=>'1', 'msg' => $this->lang->line('ltr_privacy_updated_msg'));
-                }else{
-                    $resp = array('status'=>'0');
+                $privacy_data = $this->db_model->select_data('*', 'privacy_policy_data', array('id' => '1'), 1);
+                if (!empty($privacy_data))
+                {
+                    $ins = $this->db_model->update_data_limit('privacy_policy_data', $data_arr1, array('id' => 1), 1);
                 }
-                echo json_encode($resp,JSON_UNESCAPED_SLASHES);   
+                else
+                {
+                    $ins = $this->db_model->insert_data('privacy_policy_data', $data_arr1);
+                }
+                if ($ins)
+                {
+                    $resp = array('status' => '1', 'msg' => $this->lang->line('ltr_privacy_updated_msg'));
+                }
+                else
+                {
+                    $resp = array('status' => '0');
+                }
             }
-        }else{
+            else
+            {
+                $resp = array('status' => '0');
+            }
+            echo json_encode($resp, JSON_UNESCAPED_SLASHES);
+        }
+        else
+        {
             echo $this->lang->line('ltr_not_allowed_msg');
-        } 
+        }
     }
-    
-     
-     function updatetermcondition(){
-        if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')){
-            if(!empty($this->input->post('description',false))){
+
+
+    function update_terms_and_conditions()
+    {
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'))
+        {
+            if (!empty($this->input->post('term_condition', false)))
+            {
                 $data_arr = html_escape($this->input->post(NULL, false));
-               $description['description'] = $data_arr['term_condition'];
+                $description['description'] = $data_arr['term_condition'];
                 $data_arr1 = $this->security->xss_clean($description);
-               $term_data = $this->db_model->select_data('*','term_condition_data',array('id'=>'1'),1);
-               if(!empty($term_data)){
-                $ins = $this->db_model->update_data_limit('term_condition_data',$data_arr1,array('id'=>1),1);
-               }
-               else{
-                    $ins = $this->db_model->insert_data('term_condition_data',$data_arr1);
-               }
-             
-                if($ins){
-                    $resp = array('status'=>'1', 'msg' => $this->lang->line('ltr_terms_updated_msg'));
-                }else{
-                    $resp = array('status'=>'0');
+                $term_data = $this->db_model->select_data('*', 'term_condition_data', array('id' => '1'), 1);
+                if (!empty($term_data))
+                {
+                    $ins = $this->db_model->update_data_limit('term_condition_data', $data_arr1, array('id' => 1), 1);
                 }
-                echo json_encode($resp,JSON_UNESCAPED_SLASHES);   
+                else
+                {
+                    $ins = $this->db_model->insert_data('term_condition_data', $data_arr1);
+                }
+
+                if ($ins)
+                {
+                    $resp = array('status' => '1', 'msg' => $this->lang->line('ltr_terms_updated_msg'));
+                }
+                else
+                {
+                    $resp = array('status' => '0');
+                }
             }
-        }else{
+            else
+            {
+                $resp = array('status' => '0');
+            }
+            echo json_encode($resp, JSON_UNESCAPED_SLASHES);
+        }
+        else
+        {
             echo $this->lang->line('ltr_not_allowed_msg');
-        } 
+        }
+    }
+
+
+    function update_refund_policy()
+    {
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'))
+        {
+            if (!empty($this->input->post('refund_policy', false)))
+            {
+                $data_arr = html_escape($this->input->post(NULL, false));
+                $description['description'] = $data_arr['refund_policy'];
+                $data_arr1 = $this->security->xss_clean($description);
+                $term_data = $this->db_model->select_data('*', 'refund_policy_data', array('id' => '1'), 1);
+                if (!empty($term_data))
+                {
+                    $ins = $this->db_model->update_data_limit('refund_policy_data', $data_arr1, array('id' => 1), 1);
+                }
+                else
+                {
+                    $ins = $this->db_model->insert_data('refund_policy_data', $data_arr1);
+                }
+
+                if ($ins)
+                {
+                    $resp = array('status' => '1', 'msg' => $this->lang->line('ltr_refund_policy_msg'));
+                }
+                else
+                {
+                    $resp = array('status' => '0');
+                }
+            }
+            else
+            {
+                $resp = array('status' => '0');
+            }
+            echo json_encode($resp, JSON_UNESCAPED_SLASHES);
+        }
+        else
+        {
+            echo $this->lang->line('ltr_not_allowed_msg');
+        }
     }
     
     
@@ -13177,7 +13328,7 @@ function themesOption(){
                     if($res){
                         $resp = array('status'=>1,'msg'=>'Successfully Add Mask');
                     }else{
-                        $resp = array('status'=>2,'msg'=>'Not Add Mask Technicle Error ');
+                        $resp = array('status'=>2,'msg'=>'Not Add Mask Technical Error ');
                     }
                     
                    }else{

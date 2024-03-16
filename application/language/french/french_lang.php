@@ -906,6 +906,7 @@ $lang [ 'ltr_no_notification' ] = "Aucune notification n'est disponible pour mon
 $lang [ 'ltr_view_all' ] = "Voir tout";
 $lang [ 'ltr_all_notification' ] = "Toute notification";
 $lang [ 'ltr_terms_conditions' ] = "Conditions générales";
+$lang ['ltr_refund_policy'] = "Returns & Refund Policy";
 $lang [ 'ltr_terms_updated_msg' ] = "Conditions de conditions mises à jour avec succès.";
 $lang [ 'ltr_batch_cat_manager' ] = "Category Manager";
 $lang [ 'ltr_add_catégorie' ] = "Ajouter une catégorie";

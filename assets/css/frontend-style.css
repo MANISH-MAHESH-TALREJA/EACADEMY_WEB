@@ -692,7 +692,11 @@ header {
     flex-wrap: wrap;
     background-color:var(--Primary-Color);
 }
-
+.border_images {
+    overflow: hidden;
+    filter: drop-shadow(0px 1000px 0 var(--Primary-Color));
+    transform: translateY(-1000px);
+}
 .edu_action_section {
     position: relative;
     padding: 51px 20px 42px;

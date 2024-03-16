@@ -60,6 +60,7 @@ $route['admin/student-attendance-extra-class/(:any)'] = 'admin_profile/student_a
 $route['admin/certificate'] = 'admin_profile/certificate';
 $route['admin/privacy-policy'] = 'admin_profile/privacy_policy';
 $route['admin/terms-conditions'] = 'admin_profile/terms_conditions';
+$route['admin/refunds-policy'] = 'admin_profile/refunds_policy';
 $route['admin/view-certificate'] = 'admin_profile/view_certificate';
 $route['admin/view-certificate/(:any)/(:any)'] = 'admin_profile/view_certificate/$1/$2';
 $route['admin/doubts-class/(:any)'] = 'admin_profile/doubts_class/$1';
@@ -189,6 +190,7 @@ $route['contact-us'] = 'home/contact';
 $route['privacy-policy'] = 'home/privacypolicy';
 $route['privacyandpolicy'] = 'home/privacyandpolicy';
 $route['term-condition'] = 'home/termscondition';
+$route['refund-policy'] = 'home/refund_policy';
 
 $route['themes-option'] = 'home/themes_option';
 

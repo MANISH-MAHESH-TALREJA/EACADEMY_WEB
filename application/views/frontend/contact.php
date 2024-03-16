@@ -22,7 +22,7 @@
 						<div class="edu_heading_wrapper">
 							<h4 class="edu_subTitle"><?php echo !empty($frontend_details[0]['cont_sub_heading'])?$frontend_details[0]['cont_sub_heading']:'START WITH US';?></h4>
 							<h4 class="edu_heading"><?php echo !empty($frontend_details[0]['cont_heading'])?$frontend_details[0]['cont_heading']:'Contact Us for Your Query';?></h4>
-							<img src="<?php echo base_url(); ?>assets/images/border.png" alt=""/>
+							<img class="border_images" src="<?php echo base_url(); ?>assets/images/border.png" alt=""/>
 						</div>
 					</div>
 					<div class="col-lg-4 col-md-4 col-sm-12 col-12 text-center">

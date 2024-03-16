@@ -918,6 +918,7 @@ $lang['ltr_no_notification'] = "दिखाने के लिए कोई �
 $lang['ltr_view_all'] = "सभी देखें";
 $lang['ltr_all_notification'] = "सभी सूचनाएं";
 $lang['ltr_terms_conditions'] = "नियम और शर्तें";
+$lang['ltr_refund_policy'] = "Returns & Refund Policy";
 $lang['ltr_terms_updated_msg'] = "शर्तें सफलतापूर्वक अपडेट की गईं।";
 $lang['ltr_batch_cat_manager'] = "श्रेणी प्रबंधक";
 $lang['ltr_add_category'] = "श्रेणी जोड़ें";

@@ -308,6 +308,17 @@ $data['getsubjectchapter'] = $this->db_model->select_data('*','batch_subjects us
       $this->load->view('frontend/termscondition',$data);
       $this->load->view('common/front_footer',$data);
     }
+
+    function refund_policy(){
+        $data['title'] = $this->lang->line('ltr_refund_policy');
+        $data['frontend_details'] = $this->db_model->select_data('*','frontend_details',array('id'=>'1'),1);
+        $data['courses'] = $this->db_model->select_data('course_name','courses use index (id)',array('status'=>'1','admin_id'=>'1'),5);
+        $data['facilities'] = $this->db_model->select_data('title','facilities use index (id)',array('status'=>'1'),5);
+        $data['terms'] = $this->db_model->select_data('*','refund_policy_data',array('id'=>'1'),1);
+        $this->load->view('common/front_header',$data);
+        $this->load->view('frontend/refund_policy',$data);
+        $this->load->view('common/front_footer',$data);
+    }
     
 	function readMoreWord($story_desc,$C_word='') {
         $chars = 90;

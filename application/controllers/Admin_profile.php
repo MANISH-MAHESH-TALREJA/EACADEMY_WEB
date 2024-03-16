@@ -1105,6 +1105,15 @@ class Admin_profile extends CI_Controller {
 		$this->load->view("admin/terms_condition",$data); 
 		$this->load->view("common/admin_footer");   
 	}
+
+    function refunds_policy(){
+        $header['title']=$this->lang->line('ltr_refund_policy');
+        $data['refund_policy'] = $this->db_model->select_data('*','refund_policy_data',array('id'=>'1'),1);
+        $this->load->view("common/admin_header",$header);
+        $this->load->view("admin/refunds_policy",$data);
+        $this->load->view("common/admin_footer");
+    }
+
 	
 	function view_certificate_demo(){
 	    $header['title']=$this->lang->line('ltr_view_certificate');	

@@ -12,7 +12,7 @@
 							</div>
 							<div class="edu_btn_wrapper">
 								<div class="col-lg-12 col-md-12 col-sm-12 col-12 edu_btn-top-space"> 
-									<button type="button" class="btn btn-primary updatePrivacyPolicy"><?php echo html_escape($this->common->languageTranslator('ltr_save'));?></button>
+									<button type="button" class="btn btn-primary update_privacy_policy"><?php echo html_escape($this->common->languageTranslator('ltr_save'));?></button>
 								</div>
 							</div>
 						</div>

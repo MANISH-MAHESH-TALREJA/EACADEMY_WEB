@@ -4823,72 +4823,103 @@ $.magnificPopup.open({
         }
     });
 
-    $('.updatePrivacyPolicy').on('click', function() {
+    $('.update_privacy_policy').on('click', function() {
         var description = CKEDITOR.instances['description'].getData();
         var formdata = new FormData($(this).closest('form')[0]);
             formdata.append('privacy',description);
-        var valid_check = validate_form($(this).closest('form'));
-        if (valid_check == 'valid') {
-            $.ajax({
-                method: "POST",
-                url: base_url + 'ajaxcall/updatePrivacyPolicy',
-                data: formdata,
-                processData: false,
-                contentType: false,
-                success: function(resp) {
-                    var resp = $.parseJSON(resp);
-                    if (resp['status'] == '1') {
-                        toastr.success(resp['msg']);
-                           setTimeout(function() {
-                                window.location.reload(true);
-                            }, 1500);
-                    } else if (resp['status'] == '2') {
-                        toastr.error(resp['msg']);
-                    } else {
-                        toastr.error(ltr_something_msg);
-                    }
-                    $('.edu_preloader').fadeOut();
-                },
-                error: function(resp) {
+        $.ajax({
+            method: "POST",
+            url: base_url + 'ajaxcall/update_privacy_policy',
+            data: formdata,
+            processData: false,
+            contentType: false,
+            success: function(resp) {
+                var resp = $.parseJSON(resp);
+                if (resp['status'] == '1') {
+                    toastr.success(resp['msg']);
+                    setTimeout(function() {
+                        window.location.reload(true);
+                    }, 1500);
+                } else if (resp['status'] == '2') {
+                    toastr.error(resp['msg']);
+                } else {
                     toastr.error(ltr_something_msg);
-                    $('.edu_preloader').fadeOut();
                 }
-            });
-        }
+                $('.edu_preloader').fadeOut();
+            },
+            error: function(resp) {
+                toastr.error(ltr_something_msg);
+                $('.edu_preloader').fadeOut();
+            }
+        });
+
     });
 
-    $('.updatetermscondition').on('click', function() {
-        var term_condition = CKEDITOR.instances['term_condition'].getData();
+    $('.update_terms_and_conditions').on('click', function() {
+        var term_condition = CKEDITOR.instances['description'].getData();
         var formdata = new FormData($(this).closest('form')[0]);
         formdata.append('term_condition',term_condition)
-        var valid_check = validate_form($(this).closest('form'));
-        if (valid_check == 'valid') {
-            $.ajax({
-                method: "POST",
-                url: base_url + 'ajaxcall/updatetermcondition',
-                data: formdata,
-                processData: false,
-                contentType: false,
-                success: function(resp) {
-                    var resp = $.parseJSON(resp);
-                    if (resp['status'] == '1') {
-                        toastr.success(resp['msg']);
-                        setTimeout(function() {
-                            window.location.reload(true);
-                        }, 1500);
-                    } else if (resp['status'] == '2') {
-                        toastr.error(resp['msg']);
-                    } else {
-                        toastr.error(ltr_something_msg);
-                    }
-                    $('.edu_preloader').fadeOut();
-                },
-                error: function(resp) {
+        $.ajax({
+            method: "POST",
+            url: base_url + 'ajaxcall/update_terms_and_conditions',
+            data: formdata,
+            processData: false,
+            contentType: false,
+            success: function(resp) {
+                var resp = $.parseJSON(resp);
+                if (resp['status'] == '1') {
+                    toastr.success(resp['msg']);
+                    setTimeout(function() {
+                        window.location.reload(true);
+                    }, 1500);
+                } else if (resp['status'] == '2') {
+                    toastr.error(resp['msg']);
+                } else {
                     toastr.error(ltr_something_msg);
-                    $('.edu_preloader').fadeOut();
                 }
-            });
-        }
+                $('.edu_preloader').fadeOut();
+            },
+            error: function(resp) {
+                toastr.error(ltr_something_msg);
+                $('.edu_preloader').fadeOut();
+            }
+        });
+
+    });
+
+
+    $('.update_refund_policy').on('click', function () {
+        console.log("INSIDE UPDATE REFUND POLICY FUNCTION");
+        var refund_policy = CKEDITOR.instances['description'].getData();
+        var formdata = new FormData($(this).closest('form')[0]);
+        formdata.append('refund_policy', refund_policy)
+        $.ajax({
+            method: "POST",
+            url: base_url + 'ajaxcall/update_refund_policy',
+            data: formdata,
+            processData: false,
+            contentType: false,
+            success: function (resp) {
+                var resp = $.parseJSON(resp);
+                console.log("RESP : " + resp);
+                if (resp['status'] == '1') {
+                    toastr.success(resp['msg']);
+                    setTimeout(function () {
+                        window.location.reload(true);
+                    }, 1500);
+                } else if (resp['status'] == '2') {
+                    toastr.error(resp['msg']);
+                } else {
+                    toastr.error(ltr_something_msg);
+                }
+                $('.edu_preloader').fadeOut();
+            },
+            error: function (resp) {
+                toastr.error(ltr_something_msg);
+                $('.edu_preloader').fadeOut();
+            }
+        });
+
     });
 
 
@@ -5502,6 +5533,21 @@ $.magnificPopup.open({
         mathJaxLib: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML',
     });
 });
+
+
+    $('.refund_policy').each(function(e) {
+
+        CKEDITOR.replace('refund_policy', {
+            extraPlugins: 'imageuploader',
+            filebrowserBrowseUrl: base_url + 'view_server_image/wiew_image',
+            filebrowserUploadUrl: base_url + 'view_server_image/upload_blog_image',
+            filebrowserUploadMethod: "form",
+            extraPlugins: 'mathjax',
+            mathJaxLib: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML',
+        });
+    });
+
+
     if ($('.add_edit_question').length > 0) {
         CKEDITOR.replace('question', {
             extraPlugins: 'imageuploader',

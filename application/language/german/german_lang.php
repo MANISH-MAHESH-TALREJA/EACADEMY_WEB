@@ -900,6 +900,7 @@ $lang['ltr_no_notification'] = "Es ist keine Benachrichtigung zum Anzeigen verf�
 $lang['ltr_view_all'] = "Alle anzeigen";
 $lang['ltr_all_notification'] = "Alle Benachrichtigungen";
 $lang['ltr_terms_conditions'] = "Allgemeine Geschäftsbedingungen";
+$lang['ltr_refund_policy'] = "Returns & Refund Policy";
 $lang['ltr_terms_updated_msg'] ="AGB erfolgreich aktualisiert.";
 $lang['ltr_batch_cat_manager'] = "Kategorie-Manager";
 $lang['ltr_add_category'] = "Kategorie hinzufügen";
