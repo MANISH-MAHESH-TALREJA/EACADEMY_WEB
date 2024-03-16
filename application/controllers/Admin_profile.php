@@ -1235,8 +1235,11 @@ class Admin_profile extends CI_Controller {
 		$data['currency_converter_api'] = $this->general_settings('currency_converter_api');
 		$data['sandbox_accounts'] = $this->general_settings('sandbox_accounts');
 		$data['currency_code'] = $this->general_settings('currency_code');
+		$data['ccavenue_merchant_id'] = $this->general_settings('ccavenue_merchant_id');
+		$data['ccavenue_working_key'] = $this->general_settings('ccavenue_working_key');
+		$data['ccavenue_access_code'] = $this->general_settings('ccavenue_access_code');
 		$this->load->view("common/admin_header",$header);
-		$this->load->view("admin/front/payment_settings",$data); 
+		$this->load->view("admin/front/payment_settings",$data);
 		$this->load->view("common/admin_footer");
 
 	}

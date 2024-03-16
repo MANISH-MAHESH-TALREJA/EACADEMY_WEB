@@ -1,6 +1,6 @@
 <section class="edu_admin_content">
 	<div class="edu_admin_right sectionHolder edu_siteSetting_wrapper">
-	    
+
 			<div class="pxn_admin_informationdiv edu_main_wrapper">
 				<form class="pxn_amin form" enctype="multipart/form-data" method="post">
 					<div class="edu_site_setting_wrap edu_from_wrapper">
@@ -10,13 +10,19 @@
     							    <label><?php echo html_escape($this->common->languageTranslator('ltr_payment_type'));?><sup>*</sup></label>
     							    <br>
 										<input type="radio" <?php if($payment_type==1){echo 'checked';} if($payment_type!=1 && $payment_type!=2){echo 'checked';} ?> name="payment_type" value="1"><span><?php echo html_escape($this->common->languageTranslator('ltr_razorpay'));?></span>
-										
+
 										<input type="radio" <?php if($payment_type==2){echo 'checked';} ?> name="payment_type" value="2"><span><?php echo html_escape($this->common->languageTranslator('ltr_paypal'));?></span>
-        							
+
+										<input type="radio" <?php if($payment_type==3){echo 'checked';} ?> name="payment_type" value="3"><span><?php echo html_escape($this->common->languageTranslator('ltr_cc_avenues'));?></span>
+										<input type="radio" <?php if($payment_type==4){echo 'checked';} ?> name="payment_type" value="4"><span><?php echo html_escape($this->common->languageTranslator('ltr_stripe'));?></span>
+										<input type="radio" <?php if($payment_type==5){echo 'checked';} ?> name="payment_type" value="5"><span><?php echo html_escape($this->common->languageTranslator('ltr_phone_pe'));?></span>
+										<input type="radio" <?php if($payment_type==6){echo 'checked';} ?> name="payment_type" value="6"><span><?php echo html_escape($this->common->languageTranslator('ltr_paytm'));?></span>
+
 							    </div>
 							</div>
-							
-							<div class="col-lg-6 col-md-6 col-sm-12 col-12 edu_bottom_20">
+                            <!-- RAZORPAY -->
+
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-12 edu_bottom_20">
 							    <div class="form-group">
 									<label><?php echo html_escape($this->common->languageTranslator('ltr_razorpay_key_id'));?><sup>*</sup></label>
 									<input type="text" class="form-control <?php if($payment_type==1){echo 'require';} ?>" name="razorpay_key_id" value="<?php if(!empty($razorpay_key_id)){echo $razorpay_key_id;} ?>" placeholder="<?php echo html_escape($this->common->languageTranslator('ltr_key_id'));?>">
@@ -27,8 +33,11 @@
 									<label><?php echo html_escape($this->common->languageTranslator('ltr_razorpay_secret_key'));?><sup>*</sup></label>
 									<input type="text" name="razorpay_secret_key" value="<?php if(!empty($razorpay_secret_key)){echo $razorpay_secret_key ;} ?>" class="form-control " placeholder="<?php echo html_escape($this->common->languageTranslator('ltr_secret_key'));?>">
 								</div>
-							</div> 
-							<div class="col-lg-6 col-md-6 col-sm-12 col-12 edu_bottom_20">
+							</div>
+
+                            <!-- PAYPAL -->
+
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-12 edu_bottom_20">
 							    <div class="form-group">
 									<label><?php echo html_escape($this->common->languageTranslator('ltr_paypal_client_id'));?><sup>*</sup></label>
 									<input type="text" class="form-control  <?php if($payment_type==2){echo 'require';} ?>" name="paypal_client_id" value="<?php if(!empty($paypal_client_id)){echo $paypal_client_id ;} ?>" placeholder="<?php echo html_escape($this->common->languageTranslator('ltr_client_id'));?>">
@@ -40,6 +49,33 @@
 									<input type="text" class="form-control <?php if($payment_type==2){echo 'require';} ?>" name="sandbox_accounts" value="<?php if(!empty($sandbox_accounts)){echo $sandbox_accounts; } ?>" placeholder="<?php echo html_escape($this->common->languageTranslator('ltr_sandbox_accounts'));?>">
 								</div>
 							</div>
+
+
+
+                            <!-- CC AVENUES -->
+
+
+
+
+                            <div class="col-lg-3 col-md-6 col-sm-12 col-12 edu_bottom_20">
+                                <div class="form-group">
+                                    <label><?php echo html_escape($this->common->languageTranslator('ltr_ccavenue_merchant_id'));?><sup>*</sup></label>
+                                    <input type="text" class="form-control  <?php if($payment_type==3){echo 'require';} ?>" name="ccavenue_merchant_id" value="<?php if(!empty($ccavenue_merchant_id)){echo $ccavenue_merchant_id ;} ?>" placeholder="<?php echo html_escape($this->common->languageTranslator('ltr_merchant_id'));?>">
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-6 col-sm-12 col-12 edu_bottom_20">
+                                <div class="form-group">
+                                    <label><?php echo html_escape($this->common->languageTranslator('ltr_ccavenue_access_code'));?><sup>*</sup></label>
+                                    <input type="text" class="form-control <?php if($payment_type==3){echo 'require';} ?>" name="ccavenue_access_code" value="<?php if(!empty($ccavenue_access_code)){echo $ccavenue_access_code; } ?>" placeholder="<?php echo html_escape($this->common->languageTranslator('ltr_access_code'));?>">
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-12 edu_bottom_20">
+                                <div class="form-group">
+                                    <label><?php echo html_escape($this->common->languageTranslator('ltr_ccavenue_working_key'));?><sup>*</sup></label>
+                                    <input type="text" class="form-control <?php if($payment_type==3){echo 'require';} ?>" name="ccavenue_working_key" value="<?php if(!empty($ccavenue_working_key)){echo $ccavenue_working_key; } ?>" placeholder="<?php echo html_escape($this->common->languageTranslator('ltr_working_key'));?>">
+                                </div>
+                            </div>
 							<div class="col-lg-6 col-md-6 col-sm-12 col-12 edu_bottom_20">
 							    <div class="form-group">
 									<label><?php echo html_escape($this->common->languageTranslator('ltr_currency'));?><sup>*</sup></label>
@@ -160,24 +196,24 @@
 									</select>
 								</div>
 							</div>
-							
-							<!--<div class="col-lg-6 col-md-6 col-sm-12 col-12">-->
-							<!--    <div class="form-group">-->
-							<!--		<label class="currency_tooltip"><?php echo html_escape($this->common->languageTranslator('ltr_currency_converter_API'));?><sup>*</sup>-->
-							<!--		<span class="cstm_tooltip">Get your API key <a href="https://free.currencyconverterapi.com/" target="_blank"> Here</a></span>-->
-							<!--		</label>-->
-							<!--		<input type="text" class="form-control" name="currency_converter_api" value="<?php if(!empty($currency_converter_api)){echo $currency_converter_api; } ?>" placeholder="<?php echo html_escape($this->common->languageTranslator('ltr_api_key'));?>">-->
-							<!--	</div>-->
-							<!--</div>-->
-							
+
+							<div class="col-lg-6 col-md-6 col-sm-12 col-12">
+							    <div class="form-group">
+									<label class="currency_tooltip"><?php echo html_escape($this->common->languageTranslator('ltr_currency_converter_API'));?><sup>*</sup>
+									<span class="cstm_tooltip">Get Your API Key <a href="https://free.currencyconverterapi.com/" target="_blank"> Here</a></span>
+									</label>
+									<input type="text" class="form-control" name="currency_converter_api" value="<?php if(!empty($currency_converter_api)){echo $currency_converter_api; } ?>" placeholder="<?php echo html_escape($this->common->languageTranslator('ltr_api_key'));?>">
+								</div>
+							</div>
+
 							<div class="edu_btn_wrapper">
-								<div class="col-lg-12 col-md-12 col-sm-12 col-12"> 
+								<div class="col-lg-12 col-md-12 col-sm-12 col-12">
 									<button type="button" class="btn btn-primary updatePayment"><?php echo html_escape($this->common->languageTranslator('ltr_save'));?></button>
 								</div>
 							</div>
 						</div>
 					</div>
 				</form>
-			</div>		
+			</div>
 	</div>
 </section>

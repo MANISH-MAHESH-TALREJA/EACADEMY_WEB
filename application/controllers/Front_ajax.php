@@ -560,228 +560,269 @@ function change_student_status(){
             echo $this->lang->line('ltr_not_allowed_msg');
         } 
     }
-	
-	function payment_settings(){
-        if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')){
-            if(!empty($this->input->post('payment_type',false))){
+
+    function payment_settings()
+    {
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'))
+        {
+            if (!empty($this->input->post('payment_type', false)))
+            {
                 $data_arr = html_escape(html_purify($this->input->post(NULL, false)));
                 $currency_sym = array(
-                                    'AED' => 'د.إ',
-                                    'AFN' => '؋',
-                                    'ALL' => 'L',
-                                    'AMD' => 'AMD',
-                                    'ANG' => 'ƒ',
-                                    'AOA' => 'Kz',
-                                    'ARS' => '$',
-                                    'AUD' => '$',
-                                    'AWG' => 'ƒ',
-                                    'AZN' => 'AZN',
-                                    'BAM' => 'KM',
-                                    'BBD' => '$',
-                                    'BDT' => '৳ ',
-                                    'BGN' => 'лв.',
-                                    'BHD' => '.د.ب',
-                                    'BIF' => 'Fr',
-                                    'BMD' => '$',
-                                    'BND' => '$',
-                                    'BOB' => 'Bs.',
-                                    'BRL' => 'R$',
-                                    'BSD' => '$',
-                                    'BTC' => '฿',
-                                    'BTN' => 'Nu.',
-                                    'BWP' => 'P',
-                                    'BYR' => 'Br',
-                                    'BZD' => '$',
-                                    'CAD' => '$',
-                                    'CDF' => 'Fr',
-                                    'CHF' => 'CHF',
-                                    'CLP' => '$',
-                                    'CNY' => '¥',
-                                    'COP' => '$',
-                                    'CRC' => '₡',
-                                    'CUC' => '$',
-                                    'CUP' => '$',
-                                    'CVE' => '$',
-                                    'CZK' => 'Kč',
-                                    'DJF' => 'Fr',
-                                    'DKK' => 'DKK',
-                                    'DOP' => 'RD$',
-                                    'DZD' => 'د.ج',
-                                    'EGP' => 'EGP',
-                                    'ERN' => 'Nfk',
-                                    'ETB' => 'Br',
-                                    'EUR' => '€',
-                                    'FJD' => '$',
-                                    'FKP' => '£',
-                                    'GBP' => '£',
-                                    'GEL' => 'ლ',
-                                    'GGP' => '£',
-                                    'GHS' => '₵',
-                                    'GIP' => '£',
-                                    'GMD' => 'D',
-                                    'GNF' => 'Fr',
-                                    'GTQ' => 'Q',
-                                    'GYD' => '$',
-                                    'HKD' => '$',
-                                    'HNL' => 'L',
-                                    'HRK' => 'Kn',
-                                    'HTG' => 'G',
-                                    'HUF' => 'Ft',
-                                    'IDR' => 'Rp',
-                                    'ILS' => '₪',
-                                    'IMP' => '£',
-                                    'INR' => '₹',
-                                    'IQD' => 'ع.د',
-                                    'IRR' => '﷼',
-                                    'IRT' => 'تومان',
-                                    'ISK' => 'kr.',
-                                    'JEP' => '£',
-                                    'JMD' => '$',
-                                    'JOD' => 'د.ا',
-                                    'JPY' => '¥',
-                                    'KES' => 'KSh',
-                                    'KGS' => 'сом',
-                                    'KHR' => '៛',
-                                    'KMF' => 'Fr',
-                                    'KPW' => '₩',
-                                    'KRW' => '₩',
-                                    'KWD' => 'د.ك',
-                                    'KYD' => '$',
-                                    'KZT' => 'KZT',
-                                    'LAK' => '₭',
-                                    'LBP' => 'ل.ل',
-                                    'LKR' => 'රු',
-                                    'LRD' => '$',
-                                    'LSL' => 'L',
-                                    'LYD' => 'ل.د',
-                                    'MAD' => 'د.م.',
-                                    'MDL' => 'MDL',
-                                    'MGA' => 'Ar',
-                                    'MKD' => 'ден',
-                                    'MMK' => 'Ks',
-                                    'MNT' => '₮',
-                                    'MOP' => 'P',
-                                    'MRO' => 'UM',
-                                    'MUR' => '₨',
-                                    'MVR' => '.ރ',
-                                    'MWK' => 'MK',
-                                    'MXN' => '$',
-                                    'MYR' => 'RM',
-                                    'MZN' => 'MT',
-                                    'NAD' => '$',
-                                    'NGN' => '₦',
-                                    'NIO' => 'C$',
-                                    'NOK' => 'kr',
-                                    'NPR' => '₨',
-                                    'NZD' => '$',
-                                    'OMR' => 'ر.ع.',
-                                    'PAB' => 'B/.',
-                                    'PEN' => 'S/.',
-                                    'PGK' => 'K',
-                                    'PHP' => '₱',
-                                    'PKR' => '₨',
-                                    'PLN' => 'zł',
-                                    'PRB' => 'р.',
-                                    'PYG' => '₲',
-                                    'QAR' => 'ر.ق',
-                                    'RMB' => '¥',
-                                    'RON' => 'lei',
-                                    'RSD' => 'дин.',
-                                    'RUB' => '₽',
-                                    'RWF' => 'Fr',
-                                    'SAR' => 'ر.س',
-                                    'SBD' => '$',
-                                    'SCR' => '₨',
-                                    'SDG' => 'ج.س.',
-                                    'SEK' => 'kr',
-                                    'SGD' => '$',
-                                    'SHP' => '£',
-                                    'SLL' => 'Le',
-                                    'SOS' => 'Sh',
-                                    'SRD' => '$',
-                                    'SSP' => '£',
-                                    'STD' => 'Db',
-                                    'SYP' => 'ل.س',
-                                    'SZL' => 'L',
-                                    'THB' => '฿',
-                                    'TJS' => 'ЅМ',
-                                    'TMT' => 'm',
-                                    'TND' => 'د.ت',
-                                    'TOP' => 'T$',
-                                    'TRY' => '₺',
-                                    'TTD' => '$',
-                                    'TWD' => 'NT$',
-                                    'TZS' => 'Sh',
-                                    'UAH' => '₴',
-                                    'UGX' => 'UGX',
-                                    'USD' => '$',
-                                    'UYU' => '$',
-                                    'UZS' => 'UZS',
-                                    'VEF' => 'Bs F',
-                                    'VND' => '₫',
-                                    'VUV' => 'Vt',
-                                    'WST' => 'T',
-                                    'XAF' => 'Fr',
-                                    'XCD' => '$',
-                                    'XOF' => 'Fr',
-                                    'XPF' => 'Fr',
-                                    'YER' => '﷼',
-                                    'ZAR' => 'R',
-                                    'ZMW' => 'ZK',
-                                    );
-                if(!empty($this->input->post('payment_type'))){
-					$data_arrp['velue_text'] = $data_arr['payment_type'];
-					$data_arr = $this->security->xss_clean($data_arrp);
-					$ins = $this->db_model->update_data_limit('general_settings',$data_arr,array('key_text'=>'payment_type'),1);
-				} 
-				if(!empty($_POST['razorpay_key_id'])){
-					$data_arrk['velue_text'] =  trim($_POST['razorpay_key_id']);
-					$data_arrk = $this->security->xss_clean($data_arrk);
-					$ins = $this->db_model->update_data_limit('general_settings',$data_arrk,array('key_text'=>'razorpay_key_id'),1);
-				}
-				if(!empty($this->input->post('razorpay_secret_key'))){
-					$data_arrs['velue_text'] = trim($_POST['razorpay_secret_key']);
-					$data_arr = $this->security->xss_clean($data_arrs);
-					$ins = $this->db_model->update_data_limit('general_settings',$data_arr,array('key_text'=>'razorpay_secret_key'),1);
-				}
-				if(!empty($this->input->post('paypal_client_id'))){
-					$data_arpr['velue_text'] = trim($_POST['paypal_client_id']);
-					$data_arr = $this->security->xss_clean($data_arpr);
-					$ins = $this->db_model->update_data_limit('general_settings',$data_arr,array('key_text'=>'paypal_client_id'),1);
-				}
-				if(!empty($this->input->post('paypal_secret_key'))){
-					$data_arrps['velue_text'] = trim($_POST['paypal_secret_key']);
-					$data_arr = $this->security->xss_clean($data_arrps);
-					$ins = $this->db_model->update_data_limit('general_settings',$data_arr,array('key_text'=>'paypal_secret_key'),1);
-				}
-				if(!empty($this->input->post('currency_code'))){
-					$data_arrpscc['velue_text'] = trim($_POST['currency_code']);
-					$data_arr = $this->security->xss_clean($data_arrpscc);
-				    $this->db_model->update_data_limit('general_settings',array('velue_text'=>$currency_sym[$_POST['currency_code']]),array('key_text'=>'currency_decimal_code'),1);
-				    $this->db_model->update_data_limit('general_settings',$data_arr,array('key_text'=>'currency_code'),1);
-				}
-				
-				if(!empty($this->input->post('currency_converter_api'))){
-					$data_arrpsc['velue_text'] = trim($_POST['currency_converter_api']);
-					$data_arr = $this->security->xss_clean($data_arrpsc);
-				    $this->db_model->update_data_limit('general_settings',$data_arr,array('key_text'=>'currency_converter_api'),1);
-				}
-				if(!empty($this->input->post('sandbox_accounts'))){
-					$data_arrpsc['velue_text'] = trim($_POST['sandbox_accounts']);
-					$data_arr = $this->security->xss_clean($data_arrpsc);
-				    $this->db_model->update_data_limit('general_settings',$data_arr,array('key_text'=>'sandbox_accounts'),1);
-				}
-                
-                if($ins){
-                    $resp = array('status'=>'1', 'msg' =>$this->lang->line('ltr_payment_updated_msg'));
-                }else{
-                    $resp = array('status'=>'0');
+                    'AED' => 'د.إ',
+                    'AFN' => '؋',
+                    'ALL' => 'L',
+                    'AMD' => 'AMD',
+                    'ANG' => 'ƒ',
+                    'AOA' => 'Kz',
+                    'ARS' => '$',
+                    'AUD' => '$',
+                    'AWG' => 'ƒ',
+                    'AZN' => 'AZN',
+                    'BAM' => 'KM',
+                    'BBD' => '$',
+                    'BDT' => '৳ ',
+                    'BGN' => 'лв.',
+                    'BHD' => '.د.ب',
+                    'BIF' => 'Fr',
+                    'BMD' => '$',
+                    'BND' => '$',
+                    'BOB' => 'Bs.',
+                    'BRL' => 'R$',
+                    'BSD' => '$',
+                    'BTC' => '฿',
+                    'BTN' => 'Nu.',
+                    'BWP' => 'P',
+                    'BYR' => 'Br',
+                    'BZD' => '$',
+                    'CAD' => '$',
+                    'CDF' => 'Fr',
+                    'CHF' => 'CHF',
+                    'CLP' => '$',
+                    'CNY' => '¥',
+                    'COP' => '$',
+                    'CRC' => '₡',
+                    'CUC' => '$',
+                    'CUP' => '$',
+                    'CVE' => '$',
+                    'CZK' => 'Kč',
+                    'DJF' => 'Fr',
+                    'DKK' => 'DKK',
+                    'DOP' => 'RD$',
+                    'DZD' => 'د.ج',
+                    'EGP' => 'EGP',
+                    'ERN' => 'Nfk',
+                    'ETB' => 'Br',
+                    'EUR' => '€',
+                    'FJD' => '$',
+                    'FKP' => '£',
+                    'GBP' => '£',
+                    'GEL' => 'ლ',
+                    'GGP' => '£',
+                    'GHS' => '₵',
+                    'GIP' => '£',
+                    'GMD' => 'D',
+                    'GNF' => 'Fr',
+                    'GTQ' => 'Q',
+                    'GYD' => '$',
+                    'HKD' => '$',
+                    'HNL' => 'L',
+                    'HRK' => 'Kn',
+                    'HTG' => 'G',
+                    'HUF' => 'Ft',
+                    'IDR' => 'Rp',
+                    'ILS' => '₪',
+                    'IMP' => '£',
+                    'INR' => '₹',
+                    'IQD' => 'ع.د',
+                    'IRR' => '﷼',
+                    'IRT' => 'تومان',
+                    'ISK' => 'kr.',
+                    'JEP' => '£',
+                    'JMD' => '$',
+                    'JOD' => 'د.ا',
+                    'JPY' => '¥',
+                    'KES' => 'KSh',
+                    'KGS' => 'сом',
+                    'KHR' => '៛',
+                    'KMF' => 'Fr',
+                    'KPW' => '₩',
+                    'KRW' => '₩',
+                    'KWD' => 'د.ك',
+                    'KYD' => '$',
+                    'KZT' => 'KZT',
+                    'LAK' => '₭',
+                    'LBP' => 'ل.ل',
+                    'LKR' => 'රු',
+                    'LRD' => '$',
+                    'LSL' => 'L',
+                    'LYD' => 'ل.د',
+                    'MAD' => 'د.م.',
+                    'MDL' => 'MDL',
+                    'MGA' => 'Ar',
+                    'MKD' => 'ден',
+                    'MMK' => 'Ks',
+                    'MNT' => '₮',
+                    'MOP' => 'P',
+                    'MRO' => 'UM',
+                    'MUR' => '₨',
+                    'MVR' => '.ރ',
+                    'MWK' => 'MK',
+                    'MXN' => '$',
+                    'MYR' => 'RM',
+                    'MZN' => 'MT',
+                    'NAD' => '$',
+                    'NGN' => '₦',
+                    'NIO' => 'C$',
+                    'NOK' => 'kr',
+                    'NPR' => '₨',
+                    'NZD' => '$',
+                    'OMR' => 'ر.ع.',
+                    'PAB' => 'B/.',
+                    'PEN' => 'S/.',
+                    'PGK' => 'K',
+                    'PHP' => '₱',
+                    'PKR' => '₨',
+                    'PLN' => 'zł',
+                    'PRB' => 'р.',
+                    'PYG' => '₲',
+                    'QAR' => 'ر.ق',
+                    'RMB' => '¥',
+                    'RON' => 'lei',
+                    'RSD' => 'дин.',
+                    'RUB' => '₽',
+                    'RWF' => 'Fr',
+                    'SAR' => 'ر.س',
+                    'SBD' => '$',
+                    'SCR' => '₨',
+                    'SDG' => 'ج.س.',
+                    'SEK' => 'kr',
+                    'SGD' => '$',
+                    'SHP' => '£',
+                    'SLL' => 'Le',
+                    'SOS' => 'Sh',
+                    'SRD' => '$',
+                    'SSP' => '£',
+                    'STD' => 'Db',
+                    'SYP' => 'ل.س',
+                    'SZL' => 'L',
+                    'THB' => '฿',
+                    'TJS' => 'ЅМ',
+                    'TMT' => 'm',
+                    'TND' => 'د.ت',
+                    'TOP' => 'T$',
+                    'TRY' => '₺',
+                    'TTD' => '$',
+                    'TWD' => 'NT$',
+                    'TZS' => 'Sh',
+                    'UAH' => '₴',
+                    'UGX' => 'UGX',
+                    'USD' => '$',
+                    'UYU' => '$',
+                    'UZS' => 'UZS',
+                    'VEF' => 'Bs F',
+                    'VND' => '₫',
+                    'VUV' => 'Vt',
+                    'WST' => 'T',
+                    'XAF' => 'Fr',
+                    'XCD' => '$',
+                    'XOF' => 'Fr',
+                    'XPF' => 'Fr',
+                    'YER' => '﷼',
+                    'ZAR' => 'R',
+                    'ZMW' => 'ZK',
+                );
+                if (!empty($this->input->post('payment_type')))
+                {
+                    $data_arrp['velue_text'] = $data_arr['payment_type'];
+                    $data_arr = $this->security->xss_clean($data_arrp);
+                    $ins = $this->db_model->update_data_limit('general_settings', $data_arr, array('key_text' => 'payment_type'), 1);
                 }
-                echo json_encode($resp,JSON_UNESCAPED_SLASHES);   
+                if (!empty($_POST['razorpay_key_id']))
+                {
+                    $data_arrk['velue_text'] = trim($_POST['razorpay_key_id']);
+                    $data_arrk = $this->security->xss_clean($data_arrk);
+                    $ins = $this->db_model->update_data_limit('general_settings', $data_arrk, array('key_text' => 'razorpay_key_id'), 1);
+                }
+                if (!empty($this->input->post('razorpay_secret_key')))
+                {
+                    $data_arrs['velue_text'] = trim($_POST['razorpay_secret_key']);
+                    $data_arr = $this->security->xss_clean($data_arrs);
+                    $ins = $this->db_model->update_data_limit('general_settings', $data_arr, array('key_text' => 'razorpay_secret_key'), 1);
+                }
+                if (!empty($this->input->post('paypal_client_id')))
+                {
+                    $data_arpr['velue_text'] = trim($_POST['paypal_client_id']);
+                    $data_arr = $this->security->xss_clean($data_arpr);
+                    $ins = $this->db_model->update_data_limit('general_settings', $data_arr, array('key_text' => 'paypal_client_id'), 1);
+                }
+                if (!empty($this->input->post('paypal_secret_key')))
+                {
+                    $data_arrps['velue_text'] = trim($_POST['paypal_secret_key']);
+                    $data_arr = $this->security->xss_clean($data_arrps);
+                    $ins = $this->db_model->update_data_limit('general_settings', $data_arr, array('key_text' => 'paypal_secret_key'), 1);
+                }
+                if (!empty($this->input->post('currency_code')))
+                {
+                    $data_arrpscc['velue_text'] = trim($_POST['currency_code']);
+                    $data_arr = $this->security->xss_clean($data_arrpscc);
+                    $this->db_model->update_data_limit('general_settings', array('velue_text' => $currency_sym[$_POST['currency_code']]), array('key_text' => 'currency_decimal_code'), 1);
+                    $this->db_model->update_data_limit('general_settings', $data_arr, array('key_text' => 'currency_code'), 1);
+                }
+
+                if (!empty($this->input->post('currency_converter_api')))
+                {
+                    $data_arrpsc['velue_text'] = trim($_POST['currency_converter_api']);
+                    $data_arr = $this->security->xss_clean($data_arrpsc);
+                    $this->db_model->update_data_limit('general_settings', $data_arr, array('key_text' => 'currency_converter_api'), 1);
+                }
+                if (!empty($this->input->post('sandbox_accounts')))
+                {
+                    $data_arrpsc['velue_text'] = trim($_POST['sandbox_accounts']);
+                    $data_arr = $this->security->xss_clean($data_arrpsc);
+                    $this->db_model->update_data_limit('general_settings', $data_arr, array('key_text' => 'sandbox_accounts'), 1);
+                }
+
+                if (!empty($this->input->post('ccavenue_working_key')))
+                {
+                    $data_arrpsc['velue_text'] = trim($_POST['ccavenue_working_key']);
+                    $data_arr = $this->security->xss_clean($data_arrpsc);
+                    $this->db_model->update_data_limit('general_settings', $data_arr, array('key_text' => 'ccavenue_working_key'), 1);
+                }
+
+                if (!empty($this->input->post('ccavenue_merchant_id')))
+                {
+                    $data_arrpsc['velue_text'] = trim($_POST['ccavenue_merchant_id']);
+                    $data_arr = $this->security->xss_clean($data_arrpsc);
+                    $this->db_model->update_data_limit('general_settings', $data_arr, array('key_text' => 'ccavenue_merchant_id'), 1);
+                }
+
+                if (!empty($this->input->post('ccavenue_access_code')))
+                {
+                    $data_arrpsc['velue_text'] = trim($_POST['ccavenue_access_code']);
+                    $data_arr = $this->security->xss_clean($data_arrpsc);
+                    $this->db_model->update_data_limit('general_settings', $data_arr, array('key_text' => 'ccavenue_access_code'), 1);
+                }
+
+                if ($ins)
+                {
+                    $resp = array('status' => '1', 'msg' => $this->lang->line('ltr_payment_updated_msg'));
+                }
+                else
+                {
+                    $resp = array('status' => '0');
+                }
             }
-        }else{
+            else
+            {
+                $resp = array('status' => '0');
+            }
+            echo json_encode($resp, JSON_UNESCAPED_SLASHES);
+        }
+        else
+        {
             echo $this->lang->line('ltr_not_allowed_msg');
-        } 
+        }
     }
     function language_settings(){
         if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest')){
